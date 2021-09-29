@@ -1,0 +1,5 @@
+USE HAHA;
+SELECT * FROM haha;
+USE HAHA; SELECT * FROM haha;
+-- comment
+.EXIT

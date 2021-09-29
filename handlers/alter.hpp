@@ -1,0 +1,106 @@
+// 
+// CS 457 Programming Assignment 1
+// Fall 2021
+// Jacob Gayban
+//
+// Contains functions related to the ALTER command
+// 
+
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <filesystem>
+#include "../globals.hpp"
+
+using namespace std;
+namespace fs = std::filesystem;
+
+#ifndef ALTER_HPP
+#define ALTER_HPP
+
+// ALTER TABLE table_name
+// ADD column_name datatype;
+
+/**
+ * @brief  Adds a new column to a table
+ * @param  tableName  The table to edit
+ * @param  line       Stream to get input from
+ * 
+ * @return True if operation succeeded (unused)
+ * @note   Currently does not check for name conflicts
+ */
+bool processAdd(string tableName, istream* const line) {
+  string columnName, datatype;
+
+  // grab arguments
+  // assuming the statement is correctly formatted
+  *line >> columnName >> datatype;
+  if (datatype.back() == ';') datatype.pop_back();
+
+  // add arguments to file
+  ofstream file(currentDB + "/" + tableName, ios::out | ios::app);
+  file << columnName << " " << datatype << endl;
+  file.close();
+  cout << "Table " << tableName << " modified." << endl;
+  return true;
+}
+
+/**
+ * @brief  Parses and executes the ALTER command
+ * @param  line Stream to get input from
+ * 
+ * @return True if operation succeeded
+ */
+bool processAlter(istream* const line) {
+  string word;
+
+  // grab the qualifier
+  *line >> word;
+
+  if (currentDB.empty()) {
+    cout << "!Cannot alter table; no database in use." << endl;
+    return false;
+  }
+
+  switch (resolveWord(word)) {
+    case TABLE: {
+      // get the name of the table
+      string tableName;
+      *line >> tableName;
+
+      if (!fs::exists(currentDB + "/" + tableName)) {
+        cout << "!Failed to alter table " << tableName << " because it does not exist." << endl;
+        return false;
+      } 
+
+      // grab the verb and handle it accordingly
+      *line >> word;
+      switch (resolveWord(word)) {
+        case ADD: {
+          processAdd(tableName, line);
+          break;
+        }
+
+        // add more cases as program evolves
+
+        default: {
+          cout << "!Unexpected term: " << word << endl;
+          return false;
+          break;
+        }
+      }
+
+      break;
+    }
+
+    default: {
+      cout << "!Unexpected term: " << word << endl;
+      return false;
+      break;
+    }
+  }
+
+  return true;
+}
+
+#endif

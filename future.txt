@@ -1,0 +1,12 @@
+In the future, this project might be better accomplished using OOP
+A SELECT command might return a temp table, which can then be queried to produce a narrower output table
+  This is so that subqueries are able to be accomplished
+The SELECT syntax might need to be completely overhauled because other commands like WHERE and GROUP BY may or may not be optional, and thus we can't hard-code expected inputs anymore
+
+currently, duplicate attributes and incorrect data types are allowed
+
+tables may need to be inverted so that the attributes go across the top
+an "AttributesList" object may need to be made to hold all the available attributes, and to be able to easily query for a particular one
+
+scan until semicolon; no hardcoding anymore
+  do this for: SELECT
