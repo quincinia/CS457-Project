@@ -20,12 +20,19 @@ enum Keyword {
   COMMENT,
   CREATE,
   DATABASE,
+  DELETE,
   DROP,
   EXIT,
   FROM,
+  INSERT,
+  INTO,
   SELECT,
+  SET,
   TABLE,
-  USE
+  UPDATE,
+  USE,
+  VALUES,
+  WHERE
 };
 
 string capitalize(string s) {
@@ -43,12 +50,20 @@ Keyword resolveWord(string word) {
   if (word.substr(0, 2) == "--")       return COMMENT;
   if (word == "CREATE")   return CREATE;
   if (word == "DATABASE") return DATABASE;
+  if (word == "DELETE")   return DELETE;
   if (word == "DROP")     return DROP;
   if (word == ".EXIT")    return EXIT;
   if (word == "FROM")     return FROM;
+  if (word == "INSERT")   return INSERT;
+  if (word == "INTO")     return INTO;
   if (word == "SELECT")   return SELECT;
+  if (word == "SET")      return SET;
   if (word == "TABLE")    return TABLE;
+  if (word == "UPDATE")   return UPDATE;
   if (word == "USE")      return USE;
+  if (word == "VALUES")   return VALUES;
+  if (word == "WHERE")    return WHERE;
+
 
   return INVALID_KEYWORD;
 }
