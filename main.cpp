@@ -11,6 +11,7 @@
 #include <filesystem>
 #include "globals.hpp"
 #include "parser.hpp"
+#include "classes/Attribute.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -27,6 +28,8 @@ int main(int argc, char* argv[]) {
   string test;
   cout << boolalpha;
   
+  cout << Attribute("a3", "varchar(20)").toString() << endl;
+
   // run commands from file (if possible)
   if (argc >= 2) {
     istream* file = new ifstream(argv[1]);

@@ -27,7 +27,7 @@ class Attribute {
     string   getName() { return name; }
     Datatype getType() { return type; }
     unsigned getSize() { return size; }
-}
+};
 
 /**
  * @brief  Constructor
@@ -36,31 +36,36 @@ class Attribute {
  * @pre    Name conflicts should occur before creating a new Attribute
  * @return 
  */
-Attribute::Attribute(string name, string type)
-  : name(name), type(resolveType(type)) {
+Attribute::Attribute(string name, string datatype)
+  : name(name), type(resolveType(datatype)) {
     unsigned u = 0;
-    switch (this.type) {
+    switch (this->type) {
       case CHAR: {
-        sscanf(type.c_str(), "%*4c(%u)", &u);
+        sscanf(datatype.c_str(), "%*4c(%u)", &u);
         break;
       }
 
       case VARCHAR: {
-        sscanf(type.c_str(), "%*7c(%u)", &u);
+        sscanf(datatype.c_str(), "%*7c(%u)", &u);
         break;
       }
+
+      default: {
+        // getting rid of warnings
+      }
     }
-    this.size = u;
+    this->size = u;
 }
 
 /**
  * @brief  Returns the attribute as <name> <datatype>
  */
 string Attribute::toString() {
-  stringstream output(name + " ");
-  switch (this.type) {
+  stringstream output;
+  output << (name + " ");
+  switch (this->type) {
     case CHAR: {
-      output << "char(" << this.size << ")";
+      output << "char(" << this->size << ")";
       break;
     }
 
@@ -75,8 +80,12 @@ string Attribute::toString() {
     }
 
     case VARCHAR: {
-      output << "varchar(" << this.size << ")";
+      output << "varchar(" << this->size << ")";
       break;
+    }
+
+    default: {
+      // getting rid of warnings
     }
   }
   return output.str();
