@@ -70,6 +70,7 @@ Keyword resolveWord(string word) {
 
 enum Datatype {
   INVALID_TYPE,
+  CHAR,
   FLOAT,
   INT,
   VARCHAR
@@ -77,9 +78,10 @@ enum Datatype {
 
 Datatype resolveType(string word) {
   word = capitalize(word);
+  if (word.substr(0, 5) == "CHAR")     return CHAR;
   if (word == "FLOAT")    return FLOAT;
   if (word == "INT")      return INT;
-  if (word == "VARCHAR")  return VARCHAR;
+  if (word.substr(0, 7) == "VARCHAR")  return VARCHAR;
   
   return INVALID_TYPE;
 }
