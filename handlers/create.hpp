@@ -62,7 +62,7 @@ bool tableInit(string name, istream* const line, bool args) {
 
     if (datatype.back() == ',') {
       datatype.pop_back();
-      table << datatype << '\n';
+      table << datatype << " | ";
       continue;
     }
 

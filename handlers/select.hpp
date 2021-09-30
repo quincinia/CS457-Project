@@ -39,14 +39,17 @@ void printFile(string name) {
     getline(file, line);
 
   // print the first row
-  cout << line;
+  cout << line << endl;
 
   // put the bar before each item otherwise you would have an extra bar at the end
+  // obsolete now that the file is row-column
+  /*
   while (file.good()) {
     getline(file, line);
     if (line.empty()) continue;
     cout << " | " << line;
   }
+  */
   cout << endl;
   file.close();
 }
@@ -90,8 +93,9 @@ bool processSelect(istream* const line) {
   if (word == "*") {
     // eat the "FROM"
     *line >> word;
-    if (word != "FROM") {
+    if (capitalize(word) != "FROM") {
       cout << "!Unrecognized command \"" << word << "\". " << "expected 'FROM'.";
+      return false;
     }
 
     // after "FROM" should be the name of the table

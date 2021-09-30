@@ -13,6 +13,12 @@ using namespace std;
 
 extern string currentDB;
 
+string capitalize(string s) {
+  for (auto& c : s)
+    c = toupper(c);
+  return s;
+}
+
 enum Keyword {
   INVALID_KEYWORD,
   ALTER,
@@ -34,12 +40,6 @@ enum Keyword {
   VALUES,
   WHERE
 };
-
-string capitalize(string s) {
-  for (auto& c : s)
-    c = toupper(c);
-  return s;
-}
 
 // not gonna mess with maps or constexprs
 Keyword resolveWord(string word) {
@@ -66,6 +66,22 @@ Keyword resolveWord(string word) {
 
 
   return INVALID_KEYWORD;
+}
+
+enum Datatype {
+  INVALID_TYPE,
+  FLOAT,
+  INT,
+  VARCHAR
+};
+
+Datatype resolveType(string word) {
+  word = capitalize(word);
+  if (word == "FLOAT")    return FLOAT;
+  if (word == "INT")      return INT;
+  if (word == "VARCHAR")  return VARCHAR;
+  
+  return INVALID_TYPE;
 }
 
 #endif
