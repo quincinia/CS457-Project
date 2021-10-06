@@ -1,5 +1,5 @@
 // 
-// CS 457 Programming Assignment 1
+// CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
 //
@@ -12,6 +12,7 @@
 #include "globals.hpp"
 #include "parser.hpp"
 #include "classes/Attribute.hpp"
+#include "classes/Table.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -27,8 +28,9 @@ namespace fs = std::filesystem;
 int main(int argc, char* argv[]) {
   string test;
   cout << boolalpha;
-  
-  cout << Attribute("a3", "varchar(20)").toString() << endl;
+
+  currentDB = "db_1";
+  Table("tbl_1");
 
   // run commands from file (if possible)
   if (argc >= 2) {

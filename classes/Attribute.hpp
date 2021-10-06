@@ -1,5 +1,5 @@
 // 
-// CS 457 Programming Assignment 1
+// CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
 //
@@ -11,6 +11,8 @@
 #include <sstream>
 #include <cstdio>
 #include "../globals.hpp"
+
+using namespace std;
 
 #ifndef ATTRIBUTE_HPP
 #define ATTRIBUTE_HPP
@@ -24,9 +26,9 @@ class Attribute {
     Attribute(string name, string type);
     string toString();
 
-    string   getName() { return name; }
-    Datatype getType() { return type; }
-    unsigned getSize() { return size; }
+    string   getName() const { return name; }
+    Datatype getType() const { return type; }
+    unsigned getSize() const { return size; }
 };
 
 /**
@@ -52,6 +54,7 @@ Attribute::Attribute(string name, string datatype)
 
       default: {
         // getting rid of warnings
+        // if type is invalid, throw an exception
       }
     }
     this->size = u;

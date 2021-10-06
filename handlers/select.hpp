@@ -1,5 +1,5 @@
 // 
-// CS 457 Programming Assignment 1
+// CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
 //
@@ -10,6 +10,7 @@
 #include <sstream>
 #include <fstream>
 #include <filesystem>
+#include <vector>
 #include "../globals.hpp"
 
 using namespace std;
@@ -58,7 +59,7 @@ void printFile(string name) {
 /**
  * @brief  If attributes to select are given, parses the attributes list and returns arguments
  * @param  firstArg The first item in the arguments list
-
+ * @pre    Select list should be 
  * @return A vector of attributes
  * @note   Will eat the "FROM" from the stream
  */
@@ -68,6 +69,9 @@ vector<string> parseSelectList(string firstArg, istream* const line) {
 
   // the first argument got eaten by processSelect, so it needs to be passed again
   if (firstArg.back() == ',') firstArg.pop_back();
+
+  // if the string is empty, don't add?
+  // eg. item1 , item2
   args.push_back(firstArg);
 
   // process the rest of the arguments list
