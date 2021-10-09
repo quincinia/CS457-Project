@@ -17,7 +17,13 @@ namespace fs = std::filesystem;
 #ifndef CONDITION_HPP
 #define CONDITION_HPP
 
+Condition read_condition(istream* const line, Table& table) {
+  string col, op, value;
+  *line >> col >> op >> value;
+  if (value.back() == ';') value.pop_back();
 
+  return Condition(table.query_attributes(col), op, value);
+}
 
 class Condition {
   private: 
@@ -26,7 +32,7 @@ class Condition {
     
   public:
     // Attribute that condition is checking
-    const Attribute& attribute;
+    const Attribute attribute;
 
     // condition to evaluate
     string operation;
@@ -34,7 +40,7 @@ class Condition {
     // value to compare against
     string comp;
 
-    Condition(const Attribute& attribute, string operation, string value);
+    Condition(const Attribute attribute, string operation, string value);
 
     // compares the inputted value against the stored one
     bool resolve(string value);

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <exception>
 #include <filesystem>
 #include <vector>
 #include "../globals.hpp"
@@ -85,6 +86,39 @@ vector<string> parseSelectList(string firstArg, istream* const line) {
   return args;
 }
 
+// newer version, checks correctness and doesn't eat the FROM
+vector<string> readList(istream* const line) {
+  string word;
+  vector<string> args;
+
+  *line >> word;
+  if (word == "*") return args;
+
+  while (line->good() && word.back() == ',') {
+    word.pop_back();
+
+    if (resolveWord(word)) {
+      throw invalid_argument(string("!Unexpected keyword ") + "\"" + word + "\"");
+    }
+
+    if (word.empty()) continue;
+
+    args.push_back(word);
+    // cout << word << endl;
+
+    *line >> word;
+  }
+  
+  if (resolveWord(word)) {
+    throw invalid_argument(string("!Unexpected keyword ") + "\"" + word + "\"");
+  } else {
+    args.push_back(word);
+    // cout << word << endl;
+  }
+
+  return args;
+}
+
 /**
  * @brief  Parses and executes the SELECT command
  * @param  line Stream to get input from
@@ -92,35 +126,29 @@ vector<string> parseSelectList(string firstArg, istream* const line) {
  * @return True if operation succeeded
  */
 bool processSelect(istream* const line) {
+  bool selectAll = false;
   string word;
-  *line >> word;
-  if (word == "*") {
-    // eat the "FROM"
-    *line >> word;
-    if (capitalize(word) != "FROM") {
-      cout << "!Unrecognized command \"" << word << "\". " << "expected 'FROM'.";
-      return false;
-    }
+  vector<string> cols = readList(line);
 
-    // after "FROM" should be the name of the table
-    *line >> word;
-    if (word.back() == ';') word.pop_back();
+  // extract the FROM (not checking this rn)
+  *line >> word;
+
+  // extract the table name
+  *line >> word;
+  if (selectAll = (word.back() == ';')) word.pop_back();
+  if (!currentDB.empty()) {
     if (fs::exists(currentDB + "/" + word)) {
-      printFile(currentDB + "/" + word);
+      Table table(word);
+      if (selectAll) {
+        table.select(cols).print();
+      } else {
+        table.select(cols, read_condition(line, table)).print();
+      }
     } else {
       cout << "!Failed to query table " << word << " because it does not exist." << endl;
     }
   } else {
-    vector<string> args = parseSelectList(word, line);
-    for (auto s : args)
-      cout << s << endl;
-    // right now, no select list functionality has been specified, just implementing the ability to parse a list
-
-    // grab the table name
-    *line >> word;
-
-    // once we have the arguments and the table name, we can easily query the table
-    // using something like "queryTable(table, arguments)"
+    cout << "!Failed to query table; no database in use." << endl;
   }
   return true;
 }

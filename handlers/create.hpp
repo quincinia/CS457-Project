@@ -73,6 +73,8 @@ bool tableInit(string name, istream* const line, bool args) {
       break;
     }
   }
+
+  // this might need to be removed
   table << '\n';
 
   cout << "Table " << name << " created." << endl;

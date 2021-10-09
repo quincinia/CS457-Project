@@ -50,16 +50,6 @@ private:
     return col_num(col_name) == -1;
   }
 
-  Attribute query_attributes(string name)
-  {
-    for (Attribute a : attributes)
-    {
-      if (a.getName() == name)
-        return a;
-    }
-    return Attribute("", "INVALID_TYPE"); // or throw exception
-  }
-
   // delimited attributes list -> vector of pairs
   vector<pair<string, string> > read_attributes(string line)
   {
@@ -180,6 +170,16 @@ public:
 
   Table(string name);
 
+  Attribute query_attributes(string name)
+  {
+    for (Attribute a : attributes)
+    {
+      if (a.getName() == name)
+        return a;
+    }
+    return Attribute("", "INVALID_TYPE"); // or throw exception
+  }
+
   // obsolete because of select
   void print();
   void printFile();
@@ -243,6 +243,27 @@ void Table::print() {
   }
 }
 
+void Table::printFile() {
+  ofstream file(currentDB + "/" + name);
+  for (int i = 0; i < attributes.size(); i++) {
+    file << attributes[i].toString();
+    if (i+1 < attributes.size()) {
+      file << " | ";
+    }
+  }
+  file << endl;
+  for (vector<string> &row : rows) {
+    for (int i = 0; i < row.size(); i++) {
+      file << row[i];
+      if (i+1 < row.size()) {
+        file << " | ";
+      }
+    }
+    file << endl;
+  }
+  file.close();
+}
+
 void Table::alter_add(string col_name, string datatype)
 {
   if (is_unique(col_name))
@@ -273,8 +294,10 @@ void Table::create(vector<pair<string, string> > &cols)
 void Table::delete_where(Condition cond)
 {
   int i = col_num(cond.attribute.getName());
+  int num_rows = rows.size();
   if (i == -1)
   {
+    cout << "!0 records deleted; unknown column: " << cond.attribute.getName() << endl;
     return;
     // or exception?
   }
@@ -291,10 +314,12 @@ void Table::delete_where(Condition cond)
     }
   }
   rows = newRows;
+  cout << num_rows-newRows.size() << " records deleted." << endl;
 }
 
 void Table::delete_all()
 {
+  cout << rows.size() << " records deleted." << endl;
   rows.clear();
 }
 
@@ -311,6 +336,9 @@ void Table::insert(vector<string> &values)
 
 Table Table::select(vector<string> &cols)
 {
+  if (cols.size() == 0) {
+    return *this;
+  }
   vector<Attribute> selectedCols;
   vector<vector<string> > selectedRows;
   for (string col : cols)

@@ -13,9 +13,12 @@
 #include "handlers/alter.hpp"
 #include "handlers/comment.hpp"
 #include "handlers/create.hpp"
+#include "handlers/delete.hpp"
 #include "handlers/drop.hpp"
 #include "handlers/exit.hpp"
+#include "handlers/insert.hpp"
 #include "handlers/select.hpp"
+#include "handlers/update.hpp"
 #include "handlers/use.hpp"
 
 #ifndef PARSER
