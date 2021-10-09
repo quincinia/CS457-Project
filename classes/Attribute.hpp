@@ -64,6 +64,7 @@ Attribute::Attribute(string name, string datatype)
  * @brief  Returns the attribute as <name> <datatype>
  */
 string Attribute::toString() {
+  // could've just used a normal string but w.e
   stringstream output;
   output << (name + " ");
   switch (this->type) {

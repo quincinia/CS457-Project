@@ -57,7 +57,7 @@ private:
       if (a.getName() == name)
         return a;
     }
-    return Attribute("", INVALID_TYPE); // or throw exception
+    return Attribute("", "INVALID_TYPE"); // or throw exception
   }
 
   // delimited attributes list -> vector of pairs
@@ -80,7 +80,8 @@ private:
   }
 
   // reads delimited row items
-  // requires files to end with a newline
+  // don't end files with newline
+  // fix the case where the last item in the list is empty (no value)
   vector<string> read_delimited_list(string line)
   {
     istringstream list(line);
@@ -162,10 +163,9 @@ private:
     vector<vector<string> > filtered(unfiltered.size());
     for (Attribute &a : filters)
     {
-      int i = col_num(a.getName());
-      for (vector<string> &row : filtered)
-      {
-        row.push_back(unfiltered[i]);
+      int j = col_num(a.getName());
+      for (int i = 0; i < filtered.size(); i++) {
+        filtered[i].push_back(unfiltered[i][j]);
       }
     }
 
@@ -195,10 +195,10 @@ public:
 
   // instead of overloading, you can have Condition take a sort of "null" value you can check
   Table select(vector<string> &cols);
-  Table select(vector<string> &cols, Condition &cond);
+  Table select(vector<string> &cols, Condition cond);
 
   void update(vector<pair<string, string> > &cols);
-  void update(vector<pair<string, string> > &cols, Condition &cond);
+  void update(vector<pair<string, string> > &cols, Condition cond);
 };
 
 Table::Table(string name)
@@ -224,6 +224,25 @@ Table::Table(string name)
   }
 }
 
+void Table::print() {
+  for (int i = 0; i < attributes.size(); i++) {
+    cout << attributes[i].toString();
+    if (i+1 < attributes.size()) {
+      cout << " | ";
+    }
+  }
+  cout << endl;
+  for (vector<string> &row : rows) {
+    for (int i = 0; i < row.size(); i++) {
+      cout << row[i];
+      if (i+1 < row.size()) {
+        cout << " | ";
+      }
+    }
+    cout << endl;
+  }
+}
+
 void Table::alter_add(string col_name, string datatype)
 {
   if (is_unique(col_name))
@@ -235,6 +254,7 @@ void Table::alter_add(string col_name, string datatype)
   }
 }
 
+// this should be a constructor, not a function
 void Table::create(vector<pair<string, string> > &cols)
 {
   for (pair<string, string> &col : cols)
@@ -281,7 +301,12 @@ void Table::delete_all()
 void Table::insert(vector<string> &values)
 {
   // ignoring type and size checking for now
-  rows.push_back(values);
+  if (values.size() == attributes.size()) {
+    // validity checking should also be done within the handler
+    rows.push_back(values);
+  } else {
+    // throw exception?
+  }
 }
 
 Table Table::select(vector<string> &cols)
@@ -299,13 +324,14 @@ Table Table::select(vector<string> &cols)
     selectedCols.push_back(selectedAttribute);
   }
   selectedRows = filter_cols(rows, selectedCols);
+  return Table(selectedCols, selectedRows);
 }
 
-Table Table::select(vector<string> &cols, Condition &cond)
+Table Table::select(vector<string> &cols, Condition cond)
 {
-  Table newTable = select(cols);
+  Table newTable(*this);
   newTable.filter(cond);
-  return newTable;
+  return newTable.select(cols);
 }
 
 // (col, value)
@@ -329,7 +355,7 @@ void Table::update(vector<pair<string, string> > &cols)
   }
 }
 
-void update(vector<pair<string, string> > &cols, Condition &cond)
+void Table::update(vector<pair<string, string> > &cols, Condition cond)
 {
   int cond_col = col_num(cond.attribute.getName());
   for (vector<string> &row : rows)

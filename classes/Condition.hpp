@@ -101,6 +101,7 @@ bool Condition::applyCond(T a, T b) {
     }
 
     case '=': {
+      // cout << "comparing " << a << " and " << b << ": " << (a == b) << endl;
       return a == b;
       break;
     }

@@ -6,3 +6,4 @@ handlers.hpp
 main
 .vscode/
 main.dSYM/
+tests/
