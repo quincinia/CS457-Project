@@ -11,6 +11,8 @@
 #include <fstream>
 #include <filesystem>
 #include "../globals.hpp"
+#include "../classes/Table.hpp"
+#include "../classes/Condition.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -24,15 +26,18 @@ bool processDelete(istream* const line) {
     // grab next word, expecting from
     *line >> word;
 
-    switch(resolve(word)) {
+    switch(resolveWord(word)) {
         case FROM: {
             bool deleteAll = false;
 
             // extract table name
             *line >> word;
 
-            if (word.back() == ';') word.pop_back();
-
+            if (word.back() == ';') {
+                word.pop_back();
+                deleteAll = true;
+            }
+            
             if (!currentDB.empty()) {
                 if (fs::exists(currentDB + "/" + word)) {
                     Table table(word);
@@ -50,8 +55,16 @@ bool processDelete(istream* const line) {
             } else {
                 cout << "!Cannot delete from table; no database in use." << endl;
             }
+            break;
+        }
+
+        default: {
+            cout << "!Unexpected term: " << word << endl;
+            return false;
+            break;
         }
     }
+    return true;
 }
 
 #endif 

@@ -13,6 +13,7 @@
 #include <utility>
 #include <filesystem>
 #include "../globals.hpp"
+#include "../classes/Condition.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -44,7 +45,7 @@ vector<pair<string, string>> read_assignments(istream* const line, bool &updateC
 }
 
 bool processUpdate(istream* const line) {
-    bool updateCond = false;
+    bool updateCond = true;
     string word;
 
     // grab table name
@@ -57,6 +58,8 @@ bool processUpdate(istream* const line) {
             *line >> word;
             vector<pair<string, string> > cols = read_assignments(line, updateCond);
             if (updateCond) {
+                // extract the WHERE (not checking this rn)
+                *line >> word;
                 table.update(cols, read_condition(line, table));
             } else {
                 table.update(cols);
@@ -64,10 +67,13 @@ bool processUpdate(istream* const line) {
             table.printFile();
         } else {
             cout << "!Failed to update table " << word << " because it does not exist." << endl;
+            return false;
         }
     } else {
         cout << "!Failed to update table; no database in use." << endl;
+        return false;
     }
+    return true;
 }
 
 #endif 

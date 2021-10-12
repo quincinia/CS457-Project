@@ -52,15 +52,18 @@ bool parseStream(istream* const stream) {
         processAlter(stream);
         break;
       }
-      case CREATE: {
-        processCreate(stream);
-        break;
-      }
       case COMMENT: {
         processComment(stream);
         break;
       }
-      //case DATABASE:
+      case CREATE: {
+        processCreate(stream);
+        break;
+      }
+      case DELETE: {
+        processDelete(stream);
+        break;
+      }
       case DROP: {
         processDrop(stream);
         break;
@@ -70,12 +73,18 @@ bool parseStream(istream* const stream) {
         return false;
         break;
       }
-      //case FROM:
+      case INSERT: {
+        processInsert(stream);
+        break;
+      }
       case SELECT: {
         processSelect(stream);
         break;
       }
-      //case TABLE:
+      case UPDATE: {
+        processUpdate(stream);
+        break;
+      }
       case USE: {
         processUse(stream);
         break;

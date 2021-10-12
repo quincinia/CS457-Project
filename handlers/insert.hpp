@@ -9,9 +9,11 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <vector>
 #include <exception>
 #include <filesystem>
 #include "../globals.hpp"
+#include "../classes/Table.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -58,7 +60,7 @@ bool processInsert(istream* const line) {
     // grab next word, expecting INTO
     *line >> word;
 
-    switch(resolve(word)) {
+    switch(resolveWord(word)) {
         case INTO: {
             // extract table name
             *line >> word;

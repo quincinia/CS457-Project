@@ -12,6 +12,7 @@
 #include "globals.hpp"
 #include "parser.hpp"
 #include "classes/Attribute.hpp"
+#include "classes/Condition.hpp"
 #include "classes/Table.hpp"
 
 using namespace std;
@@ -25,11 +26,27 @@ namespace fs = std::filesystem;
 // Files can only be read ONCE, at the start of the program, after which
 // the program switches to command-line-only mode
 
+void table_test();
+
 int main(int argc, char *argv[])
 {
   string test;
   cout << boolalpha;
 
+  // run commands from file (if possible)
+  if (argc >= 2)
+  {
+    istream *file = new ifstream(argv[1]);
+    parseStream(file);
+    delete file;
+  }
+
+  // run commands from command line
+  while (parseStream(&cin));
+  // getline(cin, test);
+}
+
+void table_test() {
   currentDB = "db_1";
   Table table("tbl_1");
   Attribute a("a3", "float");
@@ -54,16 +71,4 @@ int main(int argc, char *argv[])
   table.print();
   table.update(newVal);
   table.print();
-
-  // run commands from file (if possible)
-  if (argc >= 2)
-  {
-    istream *file = new ifstream(argv[1]);
-    parseStream(file);
-    delete file;
-  }
-
-  // run commands from command line
-  while (parseStream(&cin));
-  // getline(cin, test);
 }

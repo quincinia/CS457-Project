@@ -13,6 +13,8 @@
 #include <filesystem>
 #include <vector>
 #include "../globals.hpp"
+#include "../classes/Table.hpp"
+#include "../classes/Condition.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -135,13 +137,14 @@ bool processSelect(istream* const line) {
 
   // extract the table name
   *line >> word;
-  if (selectAll = (word.back() == ';')) word.pop_back();
+  if ((selectAll = (word.back() == ';'))) word.pop_back();
   if (!currentDB.empty()) {
     if (fs::exists(currentDB + "/" + word)) {
       Table table(word);
       if (selectAll) {
         table.select(cols).print();
       } else {
+        // extract the WHERE (not checking this rn)
         table.select(cols, read_condition(line, table)).print();
       }
     } else {
