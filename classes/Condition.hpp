@@ -5,17 +5,19 @@
 //
 // Defines the Condition class, which describes
 // a boolean operation performed on an Attribute
-// 
+//
+ 
+#ifndef CONDITION_HPP
+#define CONDITION_HPP
 
 #include <iostream>
 #include <string>     // stoi, stof
 #include <exception>  // string conversions throw exceptions
+#include "Attribute.h"
+#include "Condition.h"
+#include "Table.h"
 
 using namespace std;
-namespace fs = std::filesystem; 
-
-#ifndef CONDITION_HPP
-#define CONDITION_HPP
 
 Condition read_condition(istream* const line, Table& table) {
   string col, op, value;
@@ -25,28 +27,7 @@ Condition read_condition(istream* const line, Table& table) {
   return Condition(table.query_attributes(col), op, value);
 }
 
-class Condition {
-  private: 
-    template<typename T>
-    bool applyCond(T a, T b); 
-    
-  public:
-    // Attribute that condition is checking
-    const Attribute attribute;
-
-    // condition to evaluate
-    string operation;
-
-    // value to compare against
-    string comp;
-
-    Condition(const Attribute attribute, string operation, string value);
-
-    // compares the inputted value against the stored one
-    bool resolve(string value);
-};
-
-Condition::Condition(const Attribute& attribute, string operation, string comp)
+Condition::Condition(const Attribute attribute, string operation, string comp)
   : attribute(attribute), operation(operation), comp(comp) {
 
 }

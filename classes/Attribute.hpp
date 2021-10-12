@@ -7,29 +7,16 @@
 // the name and type of a column in a table
 // 
 
+#ifndef ATTRIBUTE_HPP
+#define ATTRIBUTE_HPP
+
 #include <iostream>
 #include <sstream>
 #include <cstdio>
 #include "../globals.hpp"
+#include "Attribute.h"
 
 using namespace std;
-
-#ifndef ATTRIBUTE_HPP
-#define ATTRIBUTE_HPP
- 
-class Attribute {
-  private:
-    string name;
-    Datatype type;
-    unsigned size; // for CHAR and VARCHAR types
-  public: 
-    Attribute(string name, string type);
-    string toString();
-
-    string   getName() const { return name; }
-    Datatype getType() const { return type; }
-    unsigned getSize() const { return size; }
-};
 
 /**
  * @brief  Constructor

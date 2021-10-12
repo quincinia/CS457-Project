@@ -7,6 +7,9 @@
 // a table in the database
 //
 
+#ifndef TABLE_HPP
+#define TABLE_HPP
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -14,193 +17,151 @@
 #include <vector>
 #include <utility> // std::pair
 #include "../globals.hpp"
-#include "Attribute.hpp"
-#include "Condition.hpp"
+#include "Attribute.h"
+#include "Condition.h"
+#include "Table.h"
 
 using namespace std;
-namespace fs = std::filesystem;
 
-#ifndef TABLE_HPP
-#define TABLE_HPP
-
-class Table
+// Private methods
+// ---------------
+Table::Table(vector<Attribute> attributes, vector<vector<string> > rows)
+    : name(""), attributes(attributes), rows(rows)
 {
-private:
-  string name;
+  // temporary table constructor
+  // printFile should be disabled if the name is blank
+}
 
-  Table(vector<Attribute> attributes, vector<vector<string> > rows)
-      : name(""), attributes(attributes), rows(rows)
+// find the index of the column (starts at 0)
+int Table::col_num(string name)
+{
+  int i;
+  for (i = 0; i < attributes.size(); i++)
+    if (attributes[i].getName() == name)
+      break;
+  return ((i < attributes.size()) ? i : -1);
+}
+
+bool Table::is_unique(string col_name)
+{
+  return col_num(col_name) == -1;
+}
+
+// delimited attributes list -> vector of pairs
+vector<pair<string, string> > Table::read_attributes(string line)
+{
+  istringstream list(line);
+  string attr, type, delimiter;
+  vector<pair<string, string> > attributes;
+  while (list.good())
   {
-    // temporary table constructor
-    // printFile should be disabled if the name is blank
+    list >> attr >> type >> delimiter;
+    attributes.push_back(make_pair(attr, type));
+  }
+  for (pair<string, string> &p : attributes)
+  {
+    cout << "(" << p.first << ", " << p.second << ") ";
+  }
+  cout << endl;
+  return attributes;
+}
+
+// reads delimited row items
+// don't end files with newline
+// fix the case where the last item in the list is empty (no value)
+vector<string> Table::read_delimited_list(string line)
+{
+  istringstream list(line);
+  string value;
+  vector<string> row;
+  char curr;
+  while (list.good())
+  {
+    list.get(curr);
+    if (curr == '|')
+    {
+      value.pop_back();
+      row.push_back(value);
+      value.clear();
+      list.get(curr); // eat the space after the |
+    }
+    else
+    {
+      value.push_back(curr);
+    }
+  }
+  value.pop_back(); // the last get() will not return anything new, which means the last character read is duplicated
+
+  row.push_back(value);
+  for (string &col : row)
+    cout << col << '/';
+  cout << endl;
+  return row;
+}
+
+// if a row passes the condition, it is kept
+vector<vector<string> > Table::filter_rows(Condition cond)
+{
+  int i = col_num(cond.attribute.getName());
+  if (i == -1)
+  {
+    return vector<vector<string> >();
+  }
+  vector<vector<string> > filteredRows;
+  for (vector<string> row : rows)
+  {
+    if (cond.resolve(row[i]))
+    {
+      filteredRows.push_back(row);
+    }
+    else
+    {
+      continue;
+    }
+  }
+  return filteredRows;
+}
+
+// basicaly the opposite of delete_where
+void Table::filter(Condition cond)
+{
+  int i = col_num(cond.attribute.getName());
+  if (i == -1)
+  {
+    return;
+  }
+  vector<vector<string> > filteredRows;
+  for (vector<string> row : rows)
+  {
+    if (cond.resolve(row[i]))
+    {
+      filteredRows.push_back(row);
+    }
+    else
+    {
+      continue;
+    }
+  }
+  rows = filteredRows;
+}
+
+vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, vector<Attribute> filters)
+{
+  vector<vector<string> > filtered(unfiltered.size());
+  for (Attribute &a : filters)
+  {
+    int j = col_num(a.getName());
+    for (int i = 0; i < filtered.size(); i++) {
+      filtered[i].push_back(unfiltered[i][j]);
+    }
   }
 
-  // find the index of the column (starts at 0)
-  int col_num(string name)
-  {
-    int i;
-    for (i = 0; i < attributes.size(); i++)
-      if (attributes[i].getName() == name)
-        break;
-    return ((i < attributes.size()) ? i : -1);
-  }
+  return filtered;
+}
 
-  bool is_unique(string col_name)
-  {
-    return col_num(col_name) == -1;
-  }
 
-  // delimited attributes list -> vector of pairs
-  vector<pair<string, string> > read_attributes(string line)
-  {
-    istringstream list(line);
-    string attr, type, delimiter;
-    vector<pair<string, string> > attributes;
-    while (list.good())
-    {
-      list >> attr >> type >> delimiter;
-      attributes.push_back(make_pair(attr, type));
-    }
-    for (pair<string, string> &p : attributes)
-    {
-      cout << "(" << p.first << ", " << p.second << ") ";
-    }
-    cout << endl;
-    return attributes;
-  }
-
-  // reads delimited row items
-  // don't end files with newline
-  // fix the case where the last item in the list is empty (no value)
-  vector<string> read_delimited_list(string line)
-  {
-    istringstream list(line);
-    string value;
-    vector<string> row;
-    char curr;
-    while (list.good())
-    {
-      list.get(curr);
-      if (curr == '|')
-      {
-        value.pop_back();
-        row.push_back(value);
-        value.clear();
-        list.get(curr); // eat the space after the |
-      }
-      else
-      {
-        value.push_back(curr);
-      }
-    }
-    value.pop_back(); // the last get() will not return anything new, which means the last character read is duplicated
-
-    row.push_back(value);
-    for (string &col : row)
-      cout << col << '/';
-    cout << endl;
-    return row;
-  }
-
-  // if a row passes the condition, it is kept
-  vector<vector<string> > filter_rows(Condition cond)
-  {
-    int i = col_num(cond.attribute.getName());
-    if (i == -1)
-    {
-      return vector<vector<string> >();
-    }
-    vector<vector<string> > filteredRows;
-    for (vector<string> row : rows)
-    {
-      if (cond.resolve(row[i]))
-      {
-        filteredRows.push_back(row);
-      }
-      else
-      {
-        continue;
-      }
-    }
-    return filteredRows;
-  }
-
-  // basicaly the opposite of delete_where
-  void filter(Condition cond)
-  {
-    int i = col_num(cond.attribute.getName());
-    if (i == -1)
-    {
-      return;
-    }
-    vector<vector<string> > filteredRows;
-    for (vector<string> row : rows)
-    {
-      if (cond.resolve(row[i]))
-      {
-        filteredRows.push_back(row);
-      }
-      else
-      {
-        continue;
-      }
-    }
-    rows = filteredRows;
-  }
-
-  vector<vector<string> > filter_cols(vector<vector<string> > &unfiltered, vector<Attribute> filters)
-  {
-    vector<vector<string> > filtered(unfiltered.size());
-    for (Attribute &a : filters)
-    {
-      int j = col_num(a.getName());
-      for (int i = 0; i < filtered.size(); i++) {
-        filtered[i].push_back(unfiltered[i][j]);
-      }
-    }
-
-    return filtered;
-  }
-
-public:
-  vector<Attribute> attributes;
-
-  // not gonna convert each row into a vector, just leaving it as one big string
-  vector<vector<string> > rows;
-
-  Table(string name);
-
-  Attribute query_attributes(string name)
-  {
-    for (Attribute a : attributes)
-    {
-      if (a.getName() == name)
-        return a;
-    }
-    return Attribute("", "INVALID_TYPE"); // or throw exception
-  }
-
-  // obsolete because of select
-  void print();
-  void printFile();
-
-  void alter_add(string col_name, string datatype);
-
-  void create(vector<pair<string, string> > &cols);
-
-  void delete_where(Condition cond);
-  void delete_all();
-
-  void insert(vector<string> &values);
-
-  // instead of overloading, you can have Condition take a sort of "null" value you can check
-  Table select(vector<string> &cols);
-  Table select(vector<string> &cols, Condition cond);
-
-  void update(vector<pair<string, string> > &cols);
-  void update(vector<pair<string, string> > &cols, Condition cond);
-};
-
+// Public methods
+// --------------
 Table::Table(string name)
     : name(name)
 {
@@ -222,6 +183,16 @@ Table::Table(string name)
     getline(table, line);
     rows.push_back(read_delimited_list(line));
   }
+}
+
+Attribute Table::query_attributes(string name)
+{
+  for (Attribute a : attributes)
+  {
+    if (a.getName() == name)
+      return a;
+  }
+  return Attribute("", "INVALID_TYPE"); // or throw exception
 }
 
 void Table::print() {
@@ -252,14 +223,15 @@ void Table::printFile() {
     }
   }
   file << endl;
-  for (vector<string> &row : rows) {
-    for (int i = 0; i < row.size(); i++) {
-      file << row[i];
-      if (i+1 < row.size()) {
+  for (int i = 0; i < rows.size(); i++) {
+    for (int j = 0; j < rows[i].size(); j++) {
+      file << rows[i][j];
+      if (j+1 < rows[i].size()) {
         file << " | ";
       }
     }
-    file << endl;
+    if (i+1 < rows.size()) 
+      file << endl;
   }
   file.close();
 }
