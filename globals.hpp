@@ -19,6 +19,14 @@ string capitalize(string s) {
   return s;
 }
 
+string title_case(string s) {
+  for (auto& c : s)
+    c = tolower(c);
+  if (!s.empty())
+    s.front() = toupper(s.front());
+  return s;
+}
+
 enum Keyword {
   INVALID_KEYWORD,
   ALTER,

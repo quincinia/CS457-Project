@@ -49,7 +49,12 @@ bool processDrop(istream* const line) {
     }
 
     case TABLE: {
+      // grab table name
       *line >> word;
+
+      // title case table name
+      word = title_case(word);
+
       if (word.back() == ';') word.pop_back();
       if (!currentDB.empty()) {
         if (fs::remove(currentDB + "/" + word)) {

@@ -137,6 +137,10 @@ bool processSelect(istream* const line) {
 
   // extract the table name
   *line >> word;
+
+  // title case table name
+  word = title_case(word);
+
   if ((selectAll = (word.back() == ';'))) word.pop_back();
   if (!currentDB.empty()) {
     if (fs::exists(currentDB + "/" + word)) {

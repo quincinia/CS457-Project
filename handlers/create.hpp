@@ -114,13 +114,21 @@ bool processCreate(istream* const line) {
     }
 
     case TABLE: {
-      // extract table name
       bool args = true;
+
+      // extract table name
       *line >> word;
+
+      // title case table name
+      word = title_case(word);
+
+      // semicolon means empty table (no arguments to parse)
       if (word.back() == ';') {
         word.pop_back();
         args = false;
       }
+
+      
       if (!currentDB.empty()) {
         if (fs::exists(currentDB + "/" + word)) {
           // ignore arguments list
@@ -128,6 +136,7 @@ bool processCreate(istream* const line) {
           
           cout << "!Failed to create table " << word << " because it already exists." << endl;
         } else {
+          word = title_case(word);
           tableInit(word, line, args);
         }
       } else {

@@ -33,6 +33,9 @@ bool processDelete(istream* const line) {
             // extract table name
             *line >> word;
 
+            // title case table name
+            word = title_case(word);
+
             if (word.back() == ';') {
                 word.pop_back();
                 deleteAll = true;

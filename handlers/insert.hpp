@@ -65,6 +65,9 @@ bool processInsert(istream* const line) {
             // extract table name
             *line >> word;
 
+            // title case table name
+            word = title_case(word);
+
             if (!currentDB.empty()) {
                 if (fs::exists(currentDB + "/" + word)) {
                     vector<string> values = read_values(line);

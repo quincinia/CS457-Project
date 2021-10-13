@@ -51,6 +51,9 @@ bool processUpdate(istream* const line) {
     // grab table name
     *line >> word;
 
+    // title case table name
+    word = title_case(word);
+
     if (!currentDB.empty()) {
         if (fs::exists(currentDB + "/" + word)) {
             Table table(word);

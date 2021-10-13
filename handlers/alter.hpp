@@ -68,6 +68,9 @@ bool processAlter(istream* const line) {
       string tableName;
       *line >> tableName;
 
+      // title case table name
+      tableName = title_case(tableName);
+
       if (!fs::exists(currentDB + "/" + tableName)) {
         cout << "!Failed to alter table " << tableName << " because it does not exist." << endl;
         return false;
