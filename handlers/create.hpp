@@ -128,7 +128,9 @@ bool processCreate(istream* const line) {
         args = false;
       }
 
-      
+      // CREATE is special in that it requires the table 
+      // to NOT exist when the command is invoked, so we 
+      // won't be using table_exists() here.
       if (!currentDB.empty()) {
         if (fs::exists(currentDB + "/" + word)) {
           // ignore arguments list
@@ -136,7 +138,6 @@ bool processCreate(istream* const line) {
           
           cout << "!Failed to create table " << word << " because it already exists." << endl;
         } else {
-          word = title_case(word);
           tableInit(word, line, args);
         }
       } else {

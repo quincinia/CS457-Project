@@ -58,11 +58,11 @@ vector<pair<string, string> > Table::read_attributes(string line)
     list >> attr >> type >> delimiter;
     attributes.push_back(make_pair(attr, type));
   }
-  for (pair<string, string> &p : attributes)
+/*   for (pair<string, string> &p : attributes)
   {
     cout << "(" << p.first << ", " << p.second << ") ";
   }
-  cout << endl;
+  cout << endl; */
   return attributes;
 }
 
@@ -93,9 +93,13 @@ vector<string> Table::read_delimited_list(string line)
   value.pop_back(); // the last get() will not return anything new, which means the last character read is duplicated
 
   row.push_back(value);
-  for (string &col : row)
+  /* for (string &col : row)
     cout << col << '/';
-  cout << endl;
+  cout << endl; */
+
+  // for the case where the last two values are null
+  while (row.size() < attributes.size())
+    row.push_back("");
   return row;
 }
 
@@ -222,7 +226,8 @@ void Table::printFile() {
       file << " | ";
     }
   }
-  file << endl;
+  if (rows.size() > 0) 
+    file << endl;
   for (int i = 0; i < rows.size(); i++) {
     for (int j = 0; j < rows[i].size(); j++) {
       file << rows[i][j];
@@ -286,12 +291,12 @@ void Table::delete_where(Condition cond)
     }
   }
   rows = newRows;
-  cout << num_rows-newRows.size() << " records deleted." << endl;
+  cout << num_rows-newRows.size() << " record" << (num_rows-newRows.size() == 1 ? "" : "s") << " deleted." << endl;
 }
 
 void Table::delete_all()
 {
-  cout << rows.size() << " records deleted." << endl;
+  cout << rows.size() << " record" << (rows.size() == 1 ? "" : "s") << " deleted." << endl;
   rows.clear();
 }
 

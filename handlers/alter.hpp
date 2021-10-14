@@ -11,6 +11,7 @@
 #include <fstream>
 #include <filesystem>
 #include "../globals.hpp"
+#include "../classes/Table.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -38,9 +39,15 @@ bool processAdd(string tableName, istream* const line) {
   if (datatype.back() == ';') datatype.pop_back();
 
   // add arguments to file
-  ofstream file(currentDB + "/" + tableName, ios::out | ios::app);
+  /* ofstream file(currentDB + "/" + tableName, ios::out | ios::app);
   file << columnName << " " << datatype << endl;
   file.close();
+  cout << "Table " << tableName << " modified." << endl; */
+
+  // add arguments to table
+  Table table(tableName);
+  table.alter_add(columnName, datatype);
+  table.printFile();
   cout << "Table " << tableName << " modified." << endl;
   return true;
 }
@@ -57,11 +64,6 @@ bool processAlter(istream* const line) {
   // grab the qualifier
   *line >> word;
 
-  if (currentDB.empty()) {
-    cout << "!Cannot alter table; no database in use." << endl;
-    return false;
-  }
-
   switch (resolveWord(word)) {
     case TABLE: {
       // get the name of the table
@@ -71,10 +73,9 @@ bool processAlter(istream* const line) {
       // title case table name
       tableName = title_case(tableName);
 
-      if (!fs::exists(currentDB + "/" + tableName)) {
-        cout << "!Failed to alter table " << tableName << " because it does not exist." << endl;
+      // if the table doesn't exist, do nothing
+      if (!table_exists(tableName, "alter"))
         return false;
-      } 
 
       // grab the verb and handle it accordingly
       *line >> word;

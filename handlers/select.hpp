@@ -141,21 +141,21 @@ bool processSelect(istream* const line) {
   // title case table name
   word = title_case(word);
 
+  // determine if there is a condition 
   if ((selectAll = (word.back() == ';'))) word.pop_back();
-  if (!currentDB.empty()) {
-    if (fs::exists(currentDB + "/" + word)) {
-      Table table(word);
-      if (selectAll) {
-        table.select(cols).print();
-      } else {
-        // extract the WHERE (not checking this rn)
-        table.select(cols, read_condition(line, table)).print();
-      }
-    } else {
-      cout << "!Failed to query table " << word << " because it does not exist." << endl;
-    }
+
+  // if the table doesn't exist, do nothing
+  if (!table_exists(word, "query"))
+      return false;
+
+  // table exists, print tuples
+  Table table(word);
+  if (selectAll) {
+    table.select(cols).print();
   } else {
-    cout << "!Failed to query table; no database in use." << endl;
+    // extract the WHERE (not checking this rn)
+    *line >> word;
+    table.select(cols, read_condition(line, table)).print();
   }
   return true;
 }

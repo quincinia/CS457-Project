@@ -9,7 +9,10 @@
 #ifndef GLOBALS
 #define GLOBALS
 
+#include <filesystem>
+
 using namespace std;
+namespace fs = std::filesystem;
 
 extern string currentDB;
 
@@ -92,6 +95,25 @@ Datatype resolveType(string word) {
   if (word.substr(0, 7) == "VARCHAR")  return VARCHAR;
   
   return INVALID_TYPE;
+}
+
+bool table_exists(string table, string err_msg) {
+  // DB must be in use before accessing table
+  if (!currentDB.empty()) {
+    // table must exist before accessing
+    if (fs::exists(currentDB + "/" + title_case(table))) {
+      return true;
+    } else {
+      // if table does not exist, print error
+      cout << "!Failed to " << err_msg << " table " << table << " because it does not exist." << endl;
+      return false;
+    }
+  } else {
+    // if DB does not exist, print error
+    cout << "!Cannot " << err_msg << " table; no database in use." << endl;
+    return false;
+  }
+  return false;
 }
 
 #endif

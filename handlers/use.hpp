@@ -39,6 +39,7 @@ bool processUse(istream* const line) {
     cout << "Using database " << word << "." << endl;
   } else {
     cout << "!" << word << " is not an existing database." << endl;
+    return false;
   }
   
   return true;

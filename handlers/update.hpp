@@ -54,28 +54,28 @@ bool processUpdate(istream* const line) {
     // title case table name
     word = title_case(word);
 
-    if (!currentDB.empty()) {
-        if (fs::exists(currentDB + "/" + word)) {
-            Table table(word);
-            // extract the SET (not checking this rn)
-            *line >> word;
-            vector<pair<string, string> > cols = read_assignments(line, updateCond);
-            if (updateCond) {
-                // extract the WHERE (not checking this rn)
-                *line >> word;
-                table.update(cols, read_condition(line, table));
-            } else {
-                table.update(cols);
-            }
-            table.printFile();
-        } else {
-            cout << "!Failed to update table " << word << " because it does not exist." << endl;
-            return false;
-        }
-    } else {
-        cout << "!Failed to update table; no database in use." << endl;
+    // if the table doesn't exist, do nothing
+    if (!table_exists(word, "update"))
         return false;
+
+    // table exists, update it
+    Table table(word);
+
+    // extract the SET (not checking this rn)
+    *line >> word;
+
+    // grab the attributes that will be updated
+    vector<pair<string, string> > cols = read_assignments(line, updateCond);
+    
+    if (updateCond) {
+        // extract the WHERE (not checking this rn)
+        *line >> word;
+        table.update(cols, read_condition(line, table));
+    } else {
+        table.update(cols);
     }
+    table.printFile();
+
     return true;
 }
 

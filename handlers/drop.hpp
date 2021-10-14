@@ -56,6 +56,9 @@ bool processDrop(istream* const line) {
       word = title_case(word);
 
       if (word.back() == ';') word.pop_back();
+
+      // similar to CREATE, we don't need to check
+      // if the table exists or not
       if (!currentDB.empty()) {
         if (fs::remove(currentDB + "/" + word)) {
           cout << "Table " << word << " deleted." << endl;
@@ -65,6 +68,7 @@ bool processDrop(istream* const line) {
       } else {
         cout << "!Cannot delete table; no database in use." << endl;
       }
+      
       break;
     }
 

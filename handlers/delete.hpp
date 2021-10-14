@@ -41,23 +41,23 @@ bool processDelete(istream* const line) {
                 deleteAll = true;
             }
             
-            if (!currentDB.empty()) {
-                if (fs::exists(currentDB + "/" + word)) {
-                    Table table(word);
-                    if (deleteAll) {
-                        table.delete_all();
-                    } else {
-                        // grab the WHERE (not checking it rn)
-                        *line >> word;
-                        table.delete_where(read_condition(line, table));
-                    }
-                    table.printFile();
-                } else {
-                    cout << "!Failed to delete from " << word << " because it does not exist." << endl;
-                }
+            // if the table doesn't exist, do nothing
+            if (!table_exists(word, "delete from"))
+                return false;
+
+            // table exists, remove elements
+            Table table(word);
+            if (deleteAll) {
+                table.delete_all();
             } else {
-                cout << "!Cannot delete from table; no database in use." << endl;
+                // grab the WHERE (not checking it rn)
+                *line >> word;
+                table.delete_where(read_condition(line, table));
             }
+
+            // save new data into file
+            table.printFile();
+
             break;
         }
 

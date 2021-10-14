@@ -95,6 +95,7 @@ bool parseStream(istream* const stream) {
         break;
       }
       default: {
+        cout << "!Unexpected keyword \"" << word << "\"." << endl;
         return false;
         break;
       }

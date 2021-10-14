@@ -68,19 +68,17 @@ bool processInsert(istream* const line) {
             // title case table name
             word = title_case(word);
 
-            if (!currentDB.empty()) {
-                if (fs::exists(currentDB + "/" + word)) {
-                    vector<string> values = read_values(line);
-                    Table table(word);
-                    table.insert(values);
-                    table.printFile();
-                    cout << "1 new record inserted." << endl;
-                } else {
-                    cout << "!Failed to insert into " << word << " because it does not exist." << endl;
-                }
-            } else {
-                cout << "!Cannot insert into table; no database in use." << endl;
-            }
+            // if the table doesn't exist, do nothing
+            if (!table_exists(word, "insert into"))
+                return false;
+
+            // table exists, insert
+            vector<string> values = read_values(line);
+            Table table(word);
+            table.insert(values);
+            table.printFile();
+            cout << "1 new record inserted." << endl;
+
             break;
         }
 
