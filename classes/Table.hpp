@@ -25,14 +25,17 @@ using namespace std;
 
 // Private methods
 // ---------------
+
+// temporary table constructor, used for SELECTs
 Table::Table(vector<Attribute> attributes, vector<vector<string> > rows)
     : name(""), attributes(attributes), rows(rows)
 {
   // temporary table constructor
-  // printFile should be disabled if the name is blank
+  // printFile should be disabled if the name is blank, but not worrying about that
 }
 
 // find the index of the column (starts at 0)
+// returns -1 if the column is not found
 int Table::col_num(string name)
 {
   int i;
@@ -78,6 +81,8 @@ vector<string> Table::read_delimited_list(string line)
   while (list.good())
   {
     list.get(curr);
+
+    // '|' means that the current item is finished, and we can add it to the vector
     if (curr == '|')
     {
       value.pop_back();
@@ -87,11 +92,13 @@ vector<string> Table::read_delimited_list(string line)
     }
     else
     {
+      // otherwise, this item still needs to be read
       value.push_back(curr);
     }
   }
   value.pop_back(); // the last get() will not return anything new, which means the last character read is duplicated
 
+  // add the last item to the vector
   row.push_back(value);
   /* for (string &col : row)
     cout << col << '/';
@@ -154,9 +161,21 @@ vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, 
   vector<vector<string> > filtered(unfiltered.size());
   for (Attribute &a : filters)
   {
+    // grab the column refering to that attribute
     int j = col_num(a.getName());
-    for (int i = 0; i < filtered.size(); i++) {
-      filtered[i].push_back(unfiltered[i][j]);
+
+    // process valid columns
+    if (j != -1) {
+      for (int i = 0; i < filtered.size(); i++) {
+        // grab all the tuples in that column
+        filtered[i].push_back(unfiltered[i][j]);
+      }
+    } else {
+      // if the column doesn't exist, fill it with nothing
+      // error handling can be done here, but won't be 
+      for (int i = 0; i < filtered.size(); i++) {
+        filtered[i].push_back("");
+      }
     }
   }
 
@@ -176,12 +195,15 @@ Table::Table(string name)
 
   // initialize attributes
   getline(table, line);
+
+  // read the schema
   vector<pair<string, string> > schema = read_attributes(line);
   for (pair<string, string> &p : schema)
   {
     attributes.push_back(Attribute(p.first, p.second));
   }
 
+  // read all rows/tuples
   while (table.good())
   {
     getline(table, line);
@@ -189,6 +211,7 @@ Table::Table(string name)
   }
 }
 
+// return the Attribute given its name
 Attribute Table::query_attributes(string name)
 {
   for (Attribute a : attributes)
@@ -199,6 +222,7 @@ Attribute Table::query_attributes(string name)
   return Attribute("", "INVALID_TYPE"); // or throw exception
 }
 
+// print the entire table to cout
 void Table::print() {
   for (int i = 0; i < attributes.size(); i++) {
     cout << attributes[i].toString();
@@ -218,6 +242,7 @@ void Table::print() {
   }
 }
 
+// print the entire table to file (overwrites existing content)
 void Table::printFile() {
   ofstream file(currentDB + "/" + name);
   for (int i = 0; i < attributes.size(); i++) {
@@ -243,12 +268,15 @@ void Table::printFile() {
 
 void Table::alter_add(string col_name, string datatype)
 {
+  // only adds unique attributes
   if (is_unique(col_name))
   {
     attributes.push_back(Attribute(col_name, datatype));
     for (vector<string> &row : rows)
       row.push_back("");
     // won't write into file
+  } else {
+    cout << "!Duplicate attribute: " << col_name << " will not be added." << endl;
   }
 }
 
@@ -270,6 +298,7 @@ void Table::create(vector<pair<string, string> > &cols)
 
 void Table::delete_where(Condition cond)
 {
+  // grab column 
   int i = col_num(cond.attribute.getName());
   int num_rows = rows.size();
   if (i == -1)
@@ -281,6 +310,7 @@ void Table::delete_where(Condition cond)
   vector<vector<string> > newRows;
   for (vector<string> row : rows)
   {
+    // if the item in that column meets the condition, don't keep it
     if (cond.resolve(row[i]))
     {
       continue;
@@ -303,11 +333,13 @@ void Table::delete_all()
 void Table::insert(vector<string> &values)
 {
   // ignoring type and size checking for now
+  // add only if the degree matches
   if (values.size() == attributes.size()) {
     // validity checking should also be done within the handler
     rows.push_back(values);
   } else {
     // throw exception?
+    cout << "!Incorrect number of values." << endl;
   }
 }
 
@@ -323,7 +355,7 @@ Table Table::select(vector<string> &cols)
     Attribute selectedAttribute = query_attributes(col);
     if (selectedAttribute.getType() == INVALID_TYPE)
     {
-      cout << "Type error";
+      cout << "!Type error" << endl;
       // throw exception
     }
     selectedCols.push_back(selectedAttribute);
@@ -334,8 +366,13 @@ Table Table::select(vector<string> &cols)
 
 Table Table::select(vector<string> &cols, Condition cond)
 {
+  // copy current values
   Table newTable(*this);
+
+  // filter the rows
   newTable.filter(cond);
+
+  // filter the columns
   return newTable.select(cols);
 }
 
@@ -345,6 +382,8 @@ void Table::update(vector<pair<string, string> > &cols)
   for (pair<string, string> &p : cols)
   {
     int i = col_num(p.first);
+
+    // update only valid columns
     if (i != -1)
     {
       for (vector<string> &row : rows)
@@ -365,7 +404,7 @@ void Table::update(vector<pair<string, string> > &cols, Condition cond)
   int cond_col = col_num(cond.attribute.getName());
   for (vector<string> &row : rows)
   {
-    if (cond.resolve(row[cond_col]))
+    if (cond_col != -1 && cond.resolve(row[cond_col]))
     {
       for (pair<string, string> &p : cols)
       {

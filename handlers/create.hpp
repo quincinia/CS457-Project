@@ -138,6 +138,7 @@ bool processCreate(istream* const line) {
           
           cout << "!Failed to create table " << word << " because it already exists." << endl;
         } else {
+          // create table
           tableInit(word, line, args);
         }
       } else {

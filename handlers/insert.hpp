@@ -28,6 +28,7 @@ vector<string> read_values(istream* const line) {
     vector<string> values;
 
     *line >> value;
+    // will not accept arguments if there is a space between the 'S' and the '('
     if (capitalize(value.substr(0, 7)) == "VALUES(") {
         value.erase(0, 7);
     } else {
@@ -35,19 +36,27 @@ vector<string> read_values(istream* const line) {
     }
 
     while (line->good()) {
+        // comma means there are more arguments left
         if (value.back() == ',') {
             value.pop_back();
             values.push_back(value);
             continue;
         }
 
+        // semicolon means the list is finished
         if (value.back() == ';') {
+            // pop semicolon
             value.pop_back();
+
+            // pop closing parentheses ')'
             value.pop_back();
             values.push_back(value);
             break;
         }
 
+        // there should be no space between the last item and the ");"
+
+        // grab the next item
         *line >> value;
     }
 

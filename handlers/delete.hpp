@@ -28,6 +28,7 @@ bool processDelete(istream* const line) {
 
     switch(resolveWord(word)) {
         case FROM: {
+            // represents if there is a condition present
             bool deleteAll = false;
 
             // extract table name
@@ -36,6 +37,7 @@ bool processDelete(istream* const line) {
             // title case table name
             word = title_case(word);
 
+            // if there is no WHERE clause, then delete all
             if (word.back() == ';') {
                 word.pop_back();
                 deleteAll = true;

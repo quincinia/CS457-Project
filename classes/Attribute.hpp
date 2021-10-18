@@ -39,6 +39,10 @@ Attribute::Attribute(string name, string datatype)
         break;
       }
 
+      case INVALID_TYPE: {
+        // throw exception
+      }
+
       default: {
         // getting rid of warnings
         // if type is invalid, throw an exception

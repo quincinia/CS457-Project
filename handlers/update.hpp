@@ -27,16 +27,23 @@ vector<pair<string, string>> read_assignments(istream* const line, bool &updateC
 
     // assumes at least 1 assignment
     do {
+        // there MUST BE a space on both sides of the assignment
+        // eg. item = value, not item=value
         *line >> col >> assignment >> value;
         if (resolveWord(col) || assignment != "=" || resolveWord(value))
             throw invalid_argument("!Invalid column name or value, or missing assignment");
         else {
+            // we need a copy because we will be modifying the original value
             string insert = value;
+
+            // get rid of extra characters
             if (insert.back() == ',') insert.pop_back();
             if (insert.back() == ';') {
                 updateCond = false;
                 insert.pop_back();
             }
+
+            // pairs take the form: (attribute, value)
             args.push_back(make_pair(col, insert));
         }
     } while (line->good() && value.back() == ',');

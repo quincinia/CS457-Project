@@ -21,6 +21,9 @@ using namespace std;
 
 Condition read_condition(istream* const line, Table& table) {
   string col, op, value;
+
+  // there must be a space on both sides of the operator
+  // eg. a1 > 5, not a1>5
   *line >> col >> op >> value;
   if (value.back() == ';') value.pop_back();
 
@@ -57,6 +60,7 @@ bool Condition::resolve(string value) {
 
       default: {
         // if type is invalid, throw an exception
+        throw exception();
       }
     }
   } catch (exception& e) {

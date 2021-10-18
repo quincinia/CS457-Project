@@ -54,6 +54,7 @@ void printFile(string name) {
     cout << " | " << line;
   }
   */
+
   cout << endl;
   file.close();
 }
@@ -94,11 +95,13 @@ vector<string> readList(istream* const line) {
   vector<string> args;
 
   *line >> word;
+  // empty arguments means select all
   if (word == "*") return args;
 
   while (line->good() && word.back() == ',') {
     word.pop_back();
 
+    // check if the item is a keyword
     if (resolveWord(word)) {
       throw invalid_argument(string("!Unexpected keyword ") + "\"" + word + "\"");
     }
@@ -111,6 +114,7 @@ vector<string> readList(istream* const line) {
     *line >> word;
   }
   
+  // the last item in the list needs to be processed manually
   if (resolveWord(word)) {
     throw invalid_argument(string("!Unexpected keyword ") + "\"" + word + "\"");
   } else {
@@ -118,6 +122,7 @@ vector<string> readList(istream* const line) {
     // cout << word << endl;
   }
 
+  // return all attributes in the list
   return args;
 }
 
@@ -130,6 +135,8 @@ vector<string> readList(istream* const line) {
 bool processSelect(istream* const line) {
   bool selectAll = false;
   string word;
+
+  // read SELECT attributes list
   vector<string> cols = readList(line);
 
   // extract the FROM (not checking this rn)
