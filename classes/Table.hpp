@@ -56,28 +56,30 @@ vector<pair<string, string> > Table::read_attributes(string line)
   istringstream list(line);
   string attr, type, delimiter;
   vector<pair<string, string> > attributes;
+
+  // attributes are formatted as:
+  // <name1> <type1> | <name2> <type2 ...
+
   while (list.good())
   {
     list >> attr >> type >> delimiter;
     attributes.push_back(make_pair(attr, type));
   }
-/*   for (pair<string, string> &p : attributes)
-  {
-    cout << "(" << p.first << ", " << p.second << ") ";
-  }
-  cout << endl; */
+
   return attributes;
 }
 
 // reads delimited row items
 // don't end files with newline
-// fix the case where the last item in the list is empty (no value)
 vector<string> Table::read_delimited_list(string line)
 {
   istringstream list(line);
   string value;
   vector<string> row;
   char curr;
+
+  // build the string character-by-character; this helps accomodate unexpected whitespace within any values
+  // we are not expecting whitespace to be within a value (eg. 'space between'), but in the case there is, we can be prepared
   while (list.good())
   {
     list.get(curr);
@@ -85,10 +87,17 @@ vector<string> Table::read_delimited_list(string line)
     // '|' means that the current item is finished, and we can add it to the vector
     if (curr == '|')
     {
+      // there is a space before the delimiter which needs to be removed
       value.pop_back();
+      
+      // add item
       row.push_back(value);
+
+      // reset item for the next iteration
       value.clear();
-      list.get(curr); // eat the space after the |
+
+      // eat the space after the |
+      list.get(curr); 
     }
     else
     {
@@ -100,9 +109,6 @@ vector<string> Table::read_delimited_list(string line)
 
   // add the last item to the vector
   row.push_back(value);
-  /* for (string &col : row)
-    cout << col << '/';
-  cout << endl; */
 
   // for the case where the last two values are null
   while (row.size() < attributes.size())
@@ -111,6 +117,7 @@ vector<string> Table::read_delimited_list(string line)
 }
 
 // if a row passes the condition, it is kept
+// this function is actually unused, see Table::filter()
 vector<vector<string> > Table::filter_rows(Condition cond)
 {
   int i = col_num(cond.attribute.getName());
@@ -139,6 +146,7 @@ void Table::filter(Condition cond)
   int i = col_num(cond.attribute.getName());
   if (i == -1)
   {
+    // if the condition is invalid, then do nothing
     return;
   }
   vector<vector<string> > filteredRows;
@@ -146,6 +154,7 @@ void Table::filter(Condition cond)
   {
     if (cond.resolve(row[i]))
     {
+      // grab rows that satisfy the condition
       filteredRows.push_back(row);
     }
     else
@@ -153,12 +162,18 @@ void Table::filter(Condition cond)
       continue;
     }
   }
+  // throw away all the rows that don't satisfy the condition
   rows = filteredRows;
 }
 
+// takes a set of tuples and a set of columns, then removes the attributes 
+// from each tuple that don't match what is in the set of columns
 vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, vector<Attribute> filters)
 {
+  // initialize with the number of tuples
   vector<vector<string> > filtered(unfiltered.size());
+
+  // grab only the specified columns
   for (Attribute &a : filters)
   {
     // grab the column refering to that attribute
@@ -166,8 +181,9 @@ vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, 
 
     // process valid columns
     if (j != -1) {
+      // for each row, add this column
       for (int i = 0; i < filtered.size(); i++) {
-        // grab all the tuples in that column
+        // add the value in this column
         filtered[i].push_back(unfiltered[i][j]);
       }
     } else {
@@ -176,6 +192,8 @@ vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, 
       for (int i = 0; i < filtered.size(); i++) {
         filtered[i].push_back("");
       }
+
+      // alternatively, this can do nothing, but we aren't really expecting invalid columns
     }
   }
 
@@ -219,11 +237,13 @@ Attribute Table::query_attributes(string name)
     if (a.getName() == name)
       return a;
   }
+  cout << "!\""<< name << "\" is not a recognized attribute." << endl;
   return Attribute("", "INVALID_TYPE"); // or throw exception
 }
 
 // print the entire table to cout
 void Table::print() {
+  // print schema
   for (int i = 0; i < attributes.size(); i++) {
     cout << attributes[i].toString();
     if (i+1 < attributes.size()) {
@@ -231,6 +251,8 @@ void Table::print() {
     }
   }
   cout << endl;
+
+  // print the data in each row
   for (vector<string> &row : rows) {
     for (int i = 0; i < row.size(); i++) {
       cout << row[i];
@@ -245,12 +267,16 @@ void Table::print() {
 // print the entire table to file (overwrites existing content)
 void Table::printFile() {
   ofstream file(currentDB + "/" + name);
+
+  // pretty much the same algo as print()
   for (int i = 0; i < attributes.size(); i++) {
     file << attributes[i].toString();
     if (i+1 < attributes.size()) {
       file << " | ";
     }
   }
+
+  // we don't want an empty newline in our file
   if (rows.size() > 0) 
     file << endl;
   for (int i = 0; i < rows.size(); i++) {
@@ -266,21 +292,26 @@ void Table::printFile() {
   file.close();
 }
 
+// adds a new attribute to the table
 void Table::alter_add(string col_name, string datatype)
 {
   // only adds unique attributes
   if (is_unique(col_name))
   {
+    // create and add the Attribute
     attributes.push_back(Attribute(col_name, datatype));
+
+    // when a new attribute is added, its value is null for all tuples
     for (vector<string> &row : rows)
       row.push_back("");
-    // won't write into file
+
   } else {
     cout << "!Duplicate attribute: " << col_name << " will not be added." << endl;
   }
 }
 
-// this should be a constructor, not a function
+// this could be a constructor, not a function
+// this is also unused
 void Table::create(vector<pair<string, string> > &cols)
 {
   for (pair<string, string> &col : cols)
@@ -296,6 +327,7 @@ void Table::create(vector<pair<string, string> > &cols)
   }
 }
 
+// deletes tuples that satisfy a condition
 void Table::delete_where(Condition cond)
 {
   // grab column 
@@ -324,12 +356,14 @@ void Table::delete_where(Condition cond)
   cout << num_rows-newRows.size() << " record" << (num_rows-newRows.size() == 1 ? "" : "s") << " deleted." << endl;
 }
 
+// deletes all tuples
 void Table::delete_all()
 {
   cout << rows.size() << " record" << (rows.size() == 1 ? "" : "s") << " deleted." << endl;
   rows.clear();
 }
 
+// insert a new tuple
 void Table::insert(vector<string> &values)
 {
   // ignoring type and size checking for now
@@ -337,33 +371,45 @@ void Table::insert(vector<string> &values)
   if (values.size() == attributes.size()) {
     // validity checking should also be done within the handler
     rows.push_back(values);
+    cout << "1 new record inserted." << endl;
   } else {
     // throw exception?
-    cout << "!Incorrect number of values." << endl;
+    cout << "!Incorrect number of values, no insertion made." << endl;
   }
 }
 
+// grab a subset of the original table
+// returns another Table object in case future operations are needed
 Table Table::select(vector<string> &cols)
 {
+  // empty vector means print all (see select.hpp)
   if (cols.size() == 0) {
     return *this;
   }
   vector<Attribute> selectedCols;
   vector<vector<string> > selectedRows;
+
+  // grab all the correct attributes
   for (string col : cols)
   {
     Attribute selectedAttribute = query_attributes(col);
     if (selectedAttribute.getType() == INVALID_TYPE)
     {
       cout << "!Type error" << endl;
+      // not gonna mess with error handling for now
       // throw exception
     }
     selectedCols.push_back(selectedAttribute);
   }
+
+  // grab all the values corresponding to the chosen attributes
   selectedRows = filter_cols(rows, selectedCols);
+
+  // return a temporary table rather than printing
   return Table(selectedCols, selectedRows);
 }
 
+// same as above, except only keeps tuples that satisfy a condition
 Table Table::select(vector<string> &cols, Condition cond)
 {
   // copy current values
@@ -376,9 +422,13 @@ Table Table::select(vector<string> &cols, Condition cond)
   return newTable.select(cols);
 }
 
-// (col, value)
+// changes the of an attribute or set of attributes
+// all tuples are modified
 void Table::update(vector<pair<string, string> > &cols)
 {
+  int num_modified = 0;
+
+  // pairs are (col, value)
   for (pair<string, string> &p : cols)
   {
     int i = col_num(p.first);
@@ -386,6 +436,7 @@ void Table::update(vector<pair<string, string> > &cols)
     // update only valid columns
     if (i != -1)
     {
+      num_modified = rows.size();
       for (vector<string> &row : rows)
       {
         row[i] = p.second;
@@ -397,15 +448,25 @@ void Table::update(vector<pair<string, string> > &cols)
       continue;
     }
   }
+  cout << num_modified << " record" << (num_modified == 1 ? "" : "s") << " modified." << endl;
 }
 
+// same as above, except only changes tuples that satisfy a condition
 void Table::update(vector<pair<string, string> > &cols, Condition cond)
 {
   int cond_col = col_num(cond.attribute.getName());
+
+  // count the number of tuples modified
+  int num_modified = 0;
   for (vector<string> &row : rows)
   {
+    // update only correct attribuets and tuples that satisfy the condition
     if (cond_col != -1 && cond.resolve(row[cond_col]))
     {
+      num_modified++;
+
+      // pairs take the form: (attribute, value)
+      // see update.hpp
       for (pair<string, string> &p : cols)
       {
         int i = col_num(p.first);
@@ -416,5 +477,6 @@ void Table::update(vector<pair<string, string> > &cols, Condition cond)
       }
     }
   }
+  cout << num_modified << " record" << (num_modified == 1 ? "" : "s") << " modified." << endl;
 }
 #endif

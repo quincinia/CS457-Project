@@ -38,12 +38,6 @@ bool processAdd(string tableName, istream* const line) {
   *line >> columnName >> datatype;
   if (datatype.back() == ';') datatype.pop_back();
 
-  // add arguments to file
-  /* ofstream file(currentDB + "/" + tableName, ios::out | ios::app);
-  file << columnName << " " << datatype << endl;
-  file.close();
-  cout << "Table " << tableName << " modified." << endl; */
-
   // add arguments to table
   Table table(tableName);
   table.alter_add(columnName, datatype);

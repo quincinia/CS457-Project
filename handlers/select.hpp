@@ -66,6 +66,7 @@ void printFile(string name) {
  * @pre    Select list should be 
  * @return A vector of attributes
  * @note   Will eat the "FROM" from the stream
+ * @note   Obsolete due to readList()
  */
 vector<string> parseSelectList(string firstArg, istream* const line) {
   string word;
@@ -103,7 +104,8 @@ vector<string> readList(istream* const line) {
 
     // check if the item is a keyword
     if (resolveWord(word)) {
-      throw invalid_argument(string("!Unexpected keyword ") + "\"" + word + "\"");
+      cout << "!Unexpected keyword \"" + word + "\"" << endl;
+      return vector<string>();
     }
 
     if (word.empty()) continue;
@@ -116,7 +118,8 @@ vector<string> readList(istream* const line) {
   
   // the last item in the list needs to be processed manually
   if (resolveWord(word)) {
-    throw invalid_argument(string("!Unexpected keyword ") + "\"" + word + "\"");
+    cout << "!Unexpected keyword \"" + word + "\"" << endl;
+    return vector<string>();
   } else {
     args.push_back(word);
     // cout << word << endl;

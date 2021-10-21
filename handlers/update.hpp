@@ -30,9 +30,12 @@ vector<pair<string, string>> read_assignments(istream* const line, bool &updateC
         // there MUST BE a space on both sides of the assignment
         // eg. item = value, not item=value
         *line >> col >> assignment >> value;
-        if (resolveWord(col) || assignment != "=" || resolveWord(value))
-            throw invalid_argument("!Invalid column name or value, or missing assignment");
-        else {
+        if (resolveWord(col) || assignment != "=" || resolveWord(value)) {
+            cout << "!Invalid column name or value, or missing assignment" << endl;
+
+            // don't update anything
+            return vector<pair<string, string>>();
+        } else {
             // we need a copy because we will be modifying the original value
             string insert = value;
 

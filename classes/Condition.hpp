@@ -64,7 +64,7 @@ bool Condition::resolve(string value) {
       }
     }
   } catch (exception& e) {
-    cout << "!Conversion failure; check data" << endl;
+    cout << "!Conversion failure or invalid datatype; check data" << endl;
   }
   return false;
 }

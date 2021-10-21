@@ -41,34 +41,15 @@ int main(int argc, char *argv[])
     delete file;
   }
 
+  cout << "!Notice: when using SET and WHERE, please format your input as follows:" << endl;
+  cout << "<item> <operator> <value>" << endl;
+  cout << "Note that this program IS whitespace-sensitive." << endl;
+  cout << "Correct usage:   price = 14.99" << endl;
+  cout << "Incorrect usage: price=14.99" << endl;
+
   // run commands from command line
   while (parseStream(&cin));
   // getline(cin, test);
 }
 
-void table_test() {
-  currentDB = "db_1";
-  Table table("tbl_1");
-  Attribute a("a3", "float");
-  Attribute b("a4", "char(20)");
-  Attribute c("a5", "varchar(30)");
-  table.print();
-  table.alter_add("a5", "varchar(30)");
-  table.print();
-  table.delete_where(Condition(a, ">", "2"));
-  table.print();
-  string values[] = {"1", "\'haha\'", "\'hehe\'"};
-  vector<string> insert(values, values + sizeof(values) / sizeof(values[0]));
-  table.insert(insert);
-  table.print();
-  string attributes[] = {"a3", "a5"};
-  vector<string> cols(attributes, attributes + sizeof(attributes) / sizeof(attributes[0]));
-  table.select(cols, Condition(b, "=", "\'haha\'")).print();
-  table.print();
-  vector<pair<string, string> > newVal;
-  newVal.push_back(make_pair("a5", "\'newa5\'"));
-  table.update(newVal, Condition(c, "=", ""));
-  table.print();
-  table.update(newVal);
-  table.print();
-}
+// get rid of this

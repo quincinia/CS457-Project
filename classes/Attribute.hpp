@@ -41,6 +41,7 @@ Attribute::Attribute(string name, string datatype)
 
       case INVALID_TYPE: {
         // throw exception
+        cout << "!Datatype is invalid, operations may fail." << endl;
       }
 
       default: {

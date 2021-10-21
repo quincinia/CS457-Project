@@ -32,12 +32,16 @@ vector<string> read_values(istream* const line) {
     if (capitalize(value.substr(0, 7)) == "VALUES(") {
         value.erase(0, 7);
     } else {
-        throw invalid_argument("!Syntax error, please begin your list with VALUES(");
+        // or throw exception
+        cout << "!Syntax error, please begin your list with VALUES(" << endl;
+        return values;
     }
 
     while (line->good()) {
         // comma means there are more arguments left
         if (value.back() == ',') {
+
+            // remove the comma
             value.pop_back();
             values.push_back(value);
             continue;
@@ -45,10 +49,11 @@ vector<string> read_values(istream* const line) {
 
         // semicolon means the list is finished
         if (value.back() == ';') {
-            // pop semicolon
+
+            // remove the semicolon
             value.pop_back();
 
-            // pop closing parentheses ')'
+            // remove the closing parentheses 
             value.pop_back();
             values.push_back(value);
             break;
@@ -86,8 +91,6 @@ bool processInsert(istream* const line) {
             Table table(word);
             table.insert(values);
             table.printFile();
-            cout << "1 new record inserted." << endl;
-
             break;
         }
 

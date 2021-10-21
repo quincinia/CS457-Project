@@ -54,28 +54,35 @@ bool tableInit(string name, istream* const line, bool args) {
   // grab the opening parentheses
   line->ignore(numeric_limits<streamsize>::max(), '(');
 
-  // this can be changed to a do-while(datatype.back() != ';')
   while (line->good()) {
     *line >> col >> datatype;
 
     table << col << ' ';
 
+    // if there is a comma, then we should expect more arguments
     if (datatype.back() == ',') {
+
+      // remove the comma
       datatype.pop_back();
+
+      // add a delimiter between elements
       table << datatype << " | ";
       continue;
     }
 
+    // a semicolon means the list is done
     if (datatype.back() == ';') {
+      
+      // remove the semicolon
       datatype.pop_back();
+
+      // remove the closing parentheses
       datatype.pop_back();
+
       table << datatype;
       break;
     }
   }
-
-  // this might need to be removed
-  // table << '\n';
 
   cout << "Table " << name << " created." << endl;
 
