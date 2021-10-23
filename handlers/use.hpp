@@ -1,10 +1,10 @@
-// 
+//
 // CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
 //
 // use a (existing) database
-// 
+//
 
 #include <iostream>
 #include <sstream>
@@ -28,20 +28,25 @@ string currentDB = "";
  * 
  * @return True if operation succeeded
  */
-bool processUse(istream* const line) {
+bool processUse(istream *const line)
+{
   string word;
   *line >> word;
-  //cout << word << endl;
-  if (word.back() == ';') word.pop_back();
 
-  if (fs::exists(word)) {
+  if (word.back() == ';')
+    word.pop_back();
+
+  if (fs::exists(word))
+  {
     currentDB = word;
     cout << "Using database " << word << "." << endl;
-  } else {
+  }
+  else
+  {
     cout << "!" << word << " is not an existing database." << endl;
     return false;
   }
-  
+
   return true;
 }
 

@@ -1,10 +1,10 @@
-// 
+//
 // CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
 //
 // Contains functions related to the UPDATE command
-// 
+//
 
 #include <iostream>
 #include <sstream>
@@ -21,27 +21,34 @@ namespace fs = std::filesystem;
 #ifndef UPDATE_HPP
 #define UPDATE_HPP
 
-vector<pair<string, string>> read_assignments(istream* const line, bool &updateCond) {
+vector<pair<string, string> > read_assignments(istream *const line, bool &updateCond)
+{
     string col, assignment, value;
-    vector<pair<string, string>> args;
+    vector<pair<string, string> > args;
 
     // assumes at least 1 assignment
-    do {
+    do
+    {
         // there MUST BE a space on both sides of the assignment
         // eg. item = value, not item=value
         *line >> col >> assignment >> value;
-        if (resolveWord(col) || assignment != "=" || resolveWord(value)) {
+        if (resolveWord(col) || assignment != "=" || resolveWord(value))
+        {
             cout << "!Invalid column name or value, or missing assignment" << endl;
 
             // don't update anything
-            return vector<pair<string, string>>();
-        } else {
+            return vector<pair<string, string> >();
+        }
+        else
+        {
             // we need a copy because we will be modifying the original value
             string insert = value;
 
             // get rid of extra characters
-            if (insert.back() == ',') insert.pop_back();
-            if (insert.back() == ';') {
+            if (insert.back() == ',')
+                insert.pop_back();
+            if (insert.back() == ';')
+            {
                 updateCond = false;
                 insert.pop_back();
             }
@@ -54,7 +61,8 @@ vector<pair<string, string>> read_assignments(istream* const line, bool &updateC
     return args;
 }
 
-bool processUpdate(istream* const line) {
+bool processUpdate(istream *const line)
+{
     bool updateCond = true;
     string word;
 
@@ -76,12 +84,15 @@ bool processUpdate(istream* const line) {
 
     // grab the attributes that will be updated
     vector<pair<string, string> > cols = read_assignments(line, updateCond);
-    
-    if (updateCond) {
+
+    if (updateCond)
+    {
         // extract the WHERE (not checking this rn)
         *line >> word;
         table.update(cols, read_condition(line, table));
-    } else {
+    }
+    else
+    {
         table.update(cols);
     }
     table.printFile();
@@ -89,4 +100,4 @@ bool processUpdate(istream* const line) {
     return true;
 }
 
-#endif 
+#endif

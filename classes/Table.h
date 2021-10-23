@@ -11,7 +11,7 @@
 #define TABLE_H
 
 #include <vector>
-#include <utility>  // std::pair
+#include <utility> // std::pair
 
 using namespace std;
 
@@ -30,9 +30,8 @@ private:
     // returns -1 if the column is not found
     int col_num(string name);
 
-    // 
+    //
     bool is_unique(string col_name);
-
 
     // delimited attributes list -> vector of pairs
     vector<pair<string, string> > read_attributes(string line);
@@ -48,7 +47,7 @@ private:
     // basicaly the opposite of delete_where
     void filter(Condition cond);
 
-    // takes a set of tuples and a set of columns, then removes the attributes 
+    // takes a set of tuples and a set of columns, then removes the attributes
     // from each tuple that don't match what is in the set of columns
     vector<vector<string> > filter_cols(vector<vector<string> > &unfiltered, vector<Attribute> filters);
 
@@ -100,6 +99,9 @@ public:
 
     // same as above, except only changes tuples that satisfy a condition
     void update(vector<pair<string, string> > &cols, Condition cond);
+
+    // performs a left outer join
+    Table join(Table other);
 };
 
 #endif

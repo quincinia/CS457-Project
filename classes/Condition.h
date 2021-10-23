@@ -1,4 +1,4 @@
-// 
+//
 // CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
@@ -6,7 +6,7 @@
 // Declares the Condition class, which describes
 // a boolean operation performed on an Attribute
 //
- 
+
 #ifndef CONDITION_H
 #define CONDITION_H
 
@@ -15,28 +15,28 @@ class Table;
 
 using namespace std;
 
-class Condition {
-  private: 
-    template<typename T>
-    bool applyCond(T a, T b); 
-    
-  public:
-    // Attribute that condition is checking
-    const Attribute attribute;
+class Condition
+{
+private:
+  template <typename T>
+  bool applyCond(T a, T b);
 
-    // condition to evaluate
-    string operation;
+public:
+  // Attribute that condition is checking
+  const Attribute attribute;
 
-    // value to compare against
-    string comp;
+  // condition to evaluate
+  string operation;
 
-    Condition(const Attribute attribute, string operation, string value);
+  // value to compare against
+  string comp;
 
-    // compares the inputted value against the stored one
-    bool resolve(string value);
+  Condition(const Attribute attribute, string operation, string value);
+
+  // compares the inputted value against the stored one
+  bool resolve(string value);
 };
 
-Condition read_condition(istream* const line, Table& table);
-
+Condition read_condition(istream *const line, Table &table);
 
 #endif

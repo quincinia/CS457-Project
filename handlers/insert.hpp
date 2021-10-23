@@ -1,10 +1,10 @@
-// 
+//
 // CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
 //
 // Contains functions related to the INSERT command
-// 
+//
 
 #include <iostream>
 #include <sstream>
@@ -23,23 +23,29 @@ namespace fs = std::filesystem;
 
 // currently does not strings with multiple spaces
 // eg. 'mobile phone' will not be read correctly
-vector<string> read_values(istream* const line) {
+vector<string> read_values(istream *const line)
+{
     string value;
     vector<string> values;
 
     *line >> value;
     // will not accept arguments if there is a space between the 'S' and the '('
-    if (capitalize(value.substr(0, 7)) == "VALUES(") {
+    if (capitalize(value.substr(0, 7)) == "VALUES(")
+    {
         value.erase(0, 7);
-    } else {
+    }
+    else
+    {
         // or throw exception
         cout << "!Syntax error, please begin your list with VALUES(" << endl;
         return values;
     }
 
-    while (line->good()) {
+    while (line->good())
+    {
         // comma means there are more arguments left
-        if (value.back() == ',') {
+        if (value.back() == ',')
+        {
 
             // remove the comma
             value.pop_back();
@@ -48,12 +54,13 @@ vector<string> read_values(istream* const line) {
         }
 
         // semicolon means the list is finished
-        if (value.back() == ';') {
+        if (value.back() == ';')
+        {
 
             // remove the semicolon
             value.pop_back();
 
-            // remove the closing parentheses 
+            // remove the closing parentheses
             value.pop_back();
             values.push_back(value);
             break;
@@ -68,39 +75,43 @@ vector<string> read_values(istream* const line) {
     return values;
 }
 
-bool processInsert(istream* const line) {
+bool processInsert(istream *const line)
+{
     string word;
 
     // grab next word, expecting INTO
     *line >> word;
 
-    switch(resolveWord(word)) {
-        case INTO: {
-            // extract table name
-            *line >> word;
+    switch (resolveWord(word))
+    {
+    case INTO:
+    {
+        // extract table name
+        *line >> word;
 
-            // title case table name
-            word = title_case(word);
+        // title case table name
+        word = title_case(word);
 
-            // if the table doesn't exist, do nothing
-            if (!table_exists(word, "insert into"))
-                return false;
-
-            // table exists, insert
-            vector<string> values = read_values(line);
-            Table table(word);
-            table.insert(values);
-            table.printFile();
-            break;
-        }
-
-        default: {
-            cout << "!Unexpected term: " << word << endl;
+        // if the table doesn't exist, do nothing
+        if (!table_exists(word, "insert into"))
             return false;
-            break;
-        }
+
+        // table exists, insert
+        vector<string> values = read_values(line);
+        Table table(word);
+        table.insert(values);
+        table.printFile();
+        break;
+    }
+
+    default:
+    {
+        cout << "!Unexpected term: " << word << endl;
+        return false;
+        break;
+    }
     }
     return true;
 }
 
-#endif 
+#endif

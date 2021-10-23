@@ -1,10 +1,10 @@
-// 
+//
 // CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
 //
 // Performs any exit operations (if needed)
-// 
+//
 
 #include <iostream>
 #include <sstream>
@@ -13,7 +13,6 @@
 #include "../globals.hpp"
 
 using namespace std;
-
 
 #ifndef EXIT_HPP
 #define EXIT_HPP
@@ -25,7 +24,8 @@ using namespace std;
  * @brief  Performs exit operations (but won't end the program)
  * @return True if operation succeeded
  */
-bool processExit() {
+bool processExit()
+{
   cout << "All done." << endl;
   return true;
 }

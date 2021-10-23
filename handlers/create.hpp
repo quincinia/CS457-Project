@@ -1,10 +1,10 @@
-// 
+//
 // CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
 //
 // Contains functions related to the CREATE command
-// 
+//
 
 #include <iostream>
 #include <sstream>
@@ -39,9 +39,11 @@ namespace fs = std::filesystem;
  * 
  * @return True if operation succeeded
  */
-bool tableInit(string name, istream* const line, bool args) {
+bool tableInit(string name, istream *const line, bool args)
+{
   ofstream table(currentDB + "/" + name);
-  if (!args) {
+  if (!args)
+  {
     return true;
   }
 
@@ -54,13 +56,15 @@ bool tableInit(string name, istream* const line, bool args) {
   // grab the opening parentheses
   line->ignore(numeric_limits<streamsize>::max(), '(');
 
-  while (line->good()) {
+  while (line->good())
+  {
     *line >> col >> datatype;
 
     table << col << ' ';
 
     // if there is a comma, then we should expect more arguments
-    if (datatype.back() == ',') {
+    if (datatype.back() == ',')
+    {
 
       // remove the comma
       datatype.pop_back();
@@ -71,8 +75,9 @@ bool tableInit(string name, istream* const line, bool args) {
     }
 
     // a semicolon means the list is done
-    if (datatype.back() == ';') {
-      
+    if (datatype.back() == ';')
+    {
+
       // remove the semicolon
       datatype.pop_back();
 
@@ -95,70 +100,87 @@ bool tableInit(string name, istream* const line, bool args) {
  * 
  * @return True if operation succeeded
  */
-bool processCreate(istream* const line) {
+bool processCreate(istream *const line)
+{
   string word;
-  
+
   // grab the qualifier
   *line >> word;
 
-  switch (resolveWord(word)) {
-    case DATABASE: {
-      // extract db name
-      *line >> word;
+  switch (resolveWord(word))
+  {
+  case DATABASE:
+  {
+    // extract db name
+    *line >> word;
 
-      if (word.back() == ';') word.pop_back();
+    if (word.back() == ';')
+      word.pop_back();
 
-      if (fs::exists(word)) {
-        cout << "!Failed to create database " << word << " because it already exists." << endl; 
-        return false;
-      } else {
-        // extract this into a separate function if needed
-        cout << "Database " << word << " created." << endl;
-        fs::create_directory(word);
-      }
-
-      break;
-    }
-
-    case TABLE: {
-      bool args = true;
-
-      // extract table name
-      *line >> word;
-
-      // title case table name
-      word = title_case(word);
-
-      // semicolon means empty table (no arguments to parse)
-      if (word.back() == ';') {
-        word.pop_back();
-        args = false;
-      }
-
-      // CREATE is special in that it requires the table 
-      // to NOT exist when the command is invoked, so we 
-      // won't be using table_exists() here.
-      if (!currentDB.empty()) {
-        if (fs::exists(currentDB + "/" + word)) {
-          // ignore arguments list
-          if (args) line->ignore(numeric_limits<streamsize>::max(), ';');
-          
-          cout << "!Failed to create table " << word << " because it already exists." << endl;
-        } else {
-          // create table
-          tableInit(word, line, args);
-        }
-      } else {
-        cout << "!Cannot create table; no database in use." << endl;
-      }
-      break;
-    }
-
-    default: {
-      cout << "!Unexpected term: " << word << endl;
+    if (fs::exists(word))
+    {
+      cout << "!Failed to create database " << word << " because it already exists." << endl;
       return false;
-      break;
     }
+    else
+    {
+      // extract this into a separate function if needed
+      cout << "Database " << word << " created." << endl;
+      fs::create_directory(word);
+    }
+
+    break;
+  }
+
+  case TABLE:
+  {
+    bool args = true;
+
+    // extract table name
+    *line >> word;
+
+    // title case table name
+    word = title_case(word);
+
+    // semicolon means empty table (no arguments to parse)
+    if (word.back() == ';')
+    {
+      word.pop_back();
+      args = false;
+    }
+
+    // CREATE is special in that it requires the table
+    // to NOT exist when the command is invoked, so we
+    // won't be using table_exists() here.
+    if (!currentDB.empty())
+    {
+      if (fs::exists(currentDB + "/" + word))
+      {
+        // ignore arguments list
+        if (args)
+          line->ignore(numeric_limits<streamsize>::max(), ';');
+
+        cout << "!Failed to create table " << word << " because it already exists." << endl;
+      }
+      else
+      {
+        // create table
+        tableInit(word, line, args);
+      }
+    }
+    else
+    {
+      cout << "!Cannot create table; no database in use." << endl;
+    }
+    break;
+  }
+
+  default:
+  {
+    cout << "!Unexpected term: " << word << endl;
+    return false;
+    break;
+  }
   }
 
   return false;

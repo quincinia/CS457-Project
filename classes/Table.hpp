@@ -89,7 +89,7 @@ vector<string> Table::read_delimited_list(string line)
     {
       // there is a space before the delimiter which needs to be removed
       value.pop_back();
-      
+
       // add item
       row.push_back(value);
 
@@ -97,7 +97,7 @@ vector<string> Table::read_delimited_list(string line)
       value.clear();
 
       // eat the space after the |
-      list.get(curr); 
+      list.get(curr);
     }
     else
     {
@@ -166,7 +166,7 @@ void Table::filter(Condition cond)
   rows = filteredRows;
 }
 
-// takes a set of tuples and a set of columns, then removes the attributes 
+// takes a set of tuples and a set of columns, then removes the attributes
 // from each tuple that don't match what is in the set of columns
 vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, vector<Attribute> filters)
 {
@@ -180,16 +180,21 @@ vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, 
     int j = col_num(a.getName());
 
     // process valid columns
-    if (j != -1) {
+    if (j != -1)
+    {
       // for each row, add this column
-      for (int i = 0; i < filtered.size(); i++) {
+      for (int i = 0; i < filtered.size(); i++)
+      {
         // add the value in this column
         filtered[i].push_back(unfiltered[i][j]);
       }
-    } else {
+    }
+    else
+    {
       // if the column doesn't exist, fill it with nothing
-      // error handling can be done here, but won't be 
-      for (int i = 0; i < filtered.size(); i++) {
+      // error handling can be done here, but won't be
+      for (int i = 0; i < filtered.size(); i++)
+      {
         filtered[i].push_back("");
       }
 
@@ -199,7 +204,6 @@ vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, 
 
   return filtered;
 }
-
 
 // Public methods
 // --------------
@@ -237,26 +241,32 @@ Attribute Table::query_attributes(string name)
     if (a.getName() == name)
       return a;
   }
-  cout << "!\""<< name << "\" is not a recognized attribute." << endl;
+  cout << "!\"" << name << "\" is not a recognized attribute." << endl;
   return Attribute("", "INVALID_TYPE"); // or throw exception
 }
 
 // print the entire table to cout
-void Table::print() {
+void Table::print()
+{
   // print schema
-  for (int i = 0; i < attributes.size(); i++) {
+  for (int i = 0; i < attributes.size(); i++)
+  {
     cout << attributes[i].toString();
-    if (i+1 < attributes.size()) {
+    if (i + 1 < attributes.size())
+    {
       cout << " | ";
     }
   }
   cout << endl;
 
   // print the data in each row
-  for (vector<string> &row : rows) {
-    for (int i = 0; i < row.size(); i++) {
+  for (vector<string> &row : rows)
+  {
+    for (int i = 0; i < row.size(); i++)
+    {
       cout << row[i];
-      if (i+1 < row.size()) {
+      if (i + 1 < row.size())
+      {
         cout << " | ";
       }
     }
@@ -265,28 +275,34 @@ void Table::print() {
 }
 
 // print the entire table to file (overwrites existing content)
-void Table::printFile() {
+void Table::printFile()
+{
   ofstream file(currentDB + "/" + name);
 
   // pretty much the same algo as print()
-  for (int i = 0; i < attributes.size(); i++) {
+  for (int i = 0; i < attributes.size(); i++)
+  {
     file << attributes[i].toString();
-    if (i+1 < attributes.size()) {
+    if (i + 1 < attributes.size())
+    {
       file << " | ";
     }
   }
 
   // we don't want an empty newline in our file
-  if (rows.size() > 0) 
+  if (rows.size() > 0)
     file << endl;
-  for (int i = 0; i < rows.size(); i++) {
-    for (int j = 0; j < rows[i].size(); j++) {
+  for (int i = 0; i < rows.size(); i++)
+  {
+    for (int j = 0; j < rows[i].size(); j++)
+    {
       file << rows[i][j];
-      if (j+1 < rows[i].size()) {
+      if (j + 1 < rows[i].size())
+      {
         file << " | ";
       }
     }
-    if (i+1 < rows.size()) 
+    if (i + 1 < rows.size())
       file << endl;
   }
   file.close();
@@ -304,8 +320,9 @@ void Table::alter_add(string col_name, string datatype)
     // when a new attribute is added, its value is null for all tuples
     for (vector<string> &row : rows)
       row.push_back("");
-
-  } else {
+  }
+  else
+  {
     cout << "!Duplicate attribute: " << col_name << " will not be added." << endl;
   }
 }
@@ -330,7 +347,7 @@ void Table::create(vector<pair<string, string> > &cols)
 // deletes tuples that satisfy a condition
 void Table::delete_where(Condition cond)
 {
-  // grab column 
+  // grab column
   int i = col_num(cond.attribute.getName());
   int num_rows = rows.size();
   if (i == -1)
@@ -353,7 +370,7 @@ void Table::delete_where(Condition cond)
     }
   }
   rows = newRows;
-  cout << num_rows-newRows.size() << " record" << (num_rows-newRows.size() == 1 ? "" : "s") << " deleted." << endl;
+  cout << num_rows - newRows.size() << " record" << (num_rows - newRows.size() == 1 ? "" : "s") << " deleted." << endl;
 }
 
 // deletes all tuples
@@ -368,11 +385,14 @@ void Table::insert(vector<string> &values)
 {
   // ignoring type and size checking for now
   // add only if the degree matches
-  if (values.size() == attributes.size()) {
+  if (values.size() == attributes.size())
+  {
     // validity checking should also be done within the handler
     rows.push_back(values);
     cout << "1 new record inserted." << endl;
-  } else {
+  }
+  else
+  {
     // throw exception?
     cout << "!Incorrect number of values, no insertion made." << endl;
   }
@@ -383,7 +403,8 @@ void Table::insert(vector<string> &values)
 Table Table::select(vector<string> &cols)
 {
   // empty vector means print all (see select.hpp)
-  if (cols.size() == 0) {
+  if (cols.size() == 0)
+  {
     return *this;
   }
   vector<Attribute> selectedCols;
@@ -478,5 +499,37 @@ void Table::update(vector<pair<string, string> > &cols, Condition cond)
     }
   }
   cout << num_modified << " record" << (num_modified == 1 ? "" : "s") << " modified." << endl;
+}
+
+Table Table::join(Table other)
+{
+  Table copy(*this);
+
+  // merge attributes
+  for (Attribute &a : other.attributes)
+  {
+    if (!is_unique(a.getName()))
+    {
+      cout << "!Duplicate attribute detected; proceed with caution" << endl;
+    }
+    copy.attributes.push_back(a);
+  }
+
+  // merge rows
+  vector<vector<string> > mergedRows;
+  for (vector<string> &row : rows)
+  {
+    for (vector<string> &otherRow : other.rows)
+    {
+      vector<string> mergedRow(row.size() + otherRow.size());
+      mergedRow.insert(mergedRow.end(), row.begin(), row.end());
+      mergedRow.insert(mergedRow.end(), otherRow.begin(), otherRow.end());
+      mergedRows.push_back(mergedRow);
+    }
+  }
+
+  copy.rows = mergedRows;
+
+  return copy;
 }
 #endif

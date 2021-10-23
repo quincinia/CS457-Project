@@ -1,10 +1,10 @@
-// 
+//
 // CS 457 Programming Assignment 2
 // Fall 2021
 // Jacob Gayban
 //
 // Contains functions related to the SELECT command
-// 
+//
 
 #include <iostream>
 #include <sstream>
@@ -31,7 +31,8 @@ namespace fs = std::filesystem;
  * @brief  Prints all contents of file (for * queries)
  * @param  name Name of the table to print
  */
-void printFile(string name) {
+void printFile(string name)
+{
   ifstream file(name);
   string line;
 
@@ -59,7 +60,6 @@ void printFile(string name) {
   file.close();
 }
 
-
 /**
  * @brief  If attributes to select are given, parses the attributes list and returns arguments
  * @param  firstArg The first item in the arguments list
@@ -68,12 +68,14 @@ void printFile(string name) {
  * @note   Will eat the "FROM" from the stream
  * @note   Obsolete due to readList()
  */
-vector<string> parseSelectList(string firstArg, istream* const line) {
+vector<string> parseSelectList(string firstArg, istream *const line)
+{
   string word;
   vector<string> args;
 
   // the first argument got eaten by processSelect, so it needs to be passed again
-  if (firstArg.back() == ',') firstArg.pop_back();
+  if (firstArg.back() == ',')
+    firstArg.pop_back();
 
   // if the string is empty, don't add?
   // eg. item1 , item2
@@ -81,8 +83,10 @@ vector<string> parseSelectList(string firstArg, istream* const line) {
 
   // process the rest of the arguments list
   *line >> word; // otherwise the FROM will be added to the args list
-  while (line->good() && word != "FROM") {
-    if (word.back() == ',') word.pop_back();
+  while (line->good() && word != "FROM")
+  {
+    if (word.back() == ',')
+      word.pop_back();
     args.push_back(word);
     *line >> word;
   }
@@ -91,36 +95,44 @@ vector<string> parseSelectList(string firstArg, istream* const line) {
 }
 
 // newer version, checks correctness and doesn't eat the FROM
-vector<string> readList(istream* const line) {
+vector<string> readList(istream *const line)
+{
   string word;
   vector<string> args;
 
   *line >> word;
   // empty arguments means select all
-  if (word == "*") return args;
+  if (word == "*")
+    return args;
 
-  while (line->good() && word.back() == ',') {
+  while (line->good() && word.back() == ',')
+  {
     word.pop_back();
 
     // check if the item is a keyword
-    if (resolveWord(word)) {
+    if (resolveWord(word))
+    {
       cout << "!Unexpected keyword \"" + word + "\"" << endl;
       return vector<string>();
     }
 
-    if (word.empty()) continue;
+    if (word.empty())
+      continue;
 
     args.push_back(word);
     // cout << word << endl;
 
     *line >> word;
   }
-  
+
   // the last item in the list needs to be processed manually
-  if (resolveWord(word)) {
+  if (resolveWord(word))
+  {
     cout << "!Unexpected keyword \"" + word + "\"" << endl;
     return vector<string>();
-  } else {
+  }
+  else
+  {
     args.push_back(word);
     // cout << word << endl;
   }
@@ -129,13 +141,18 @@ vector<string> readList(istream* const line) {
   return args;
 }
 
+int read_FROM_clause(istream *const line, string &tbl1, string &alias1, string &tbl2, string &alias2)
+{
+}
+
 /**
  * @brief  Parses and executes the SELECT command
  * @param  line Stream to get input from
  * 
  * @return True if operation succeeded
  */
-bool processSelect(istream* const line) {
+bool processSelect(istream *const line)
+{
   bool selectAll = false;
   string word;
 
@@ -145,24 +162,31 @@ bool processSelect(istream* const line) {
   // extract the FROM (not checking this rn)
   *line >> word;
 
+  string tbl1, alias1;
+  string tbl2, alias2;
+
   // extract the table name
   *line >> word;
 
   // title case table name
   word = title_case(word);
 
-  // determine if there is a condition 
-  if ((selectAll = (word.back() == ';'))) word.pop_back();
+  // determine if there is a condition
+  if ((selectAll = (word.back() == ';')))
+    word.pop_back();
 
   // if the table doesn't exist, do nothing
   if (!table_exists(word, "query"))
-      return false;
+    return false;
 
   // table exists, print tuples
   Table table(word);
-  if (selectAll) {
+  if (selectAll)
+  {
     table.select(cols).print();
-  } else {
+  }
+  else
+  {
     // extract the WHERE (not checking this rn)
     *line >> word;
     table.select(cols, read_condition(line, table)).print();
