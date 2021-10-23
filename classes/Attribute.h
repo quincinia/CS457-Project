@@ -17,16 +17,18 @@ using namespace std;
 class Attribute
 {
 private:
-  string name;
-  Datatype type;
-  unsigned size; // for CHAR and VARCHAR types
+    string name;
+    Datatype type;
+    unsigned size; // for CHAR and VARCHAR types
 public:
-  Attribute(string name, string type);
-  string toString();
+    Attribute(string name, string type);
+    Attribute() : name(""), type(INVALID_TYPE) {}
+    string toString();
 
-  string getName()   const { return name; }
-  Datatype getType() const { return type; }
-  unsigned getSize() const { return size; }
+    void setName(string name) { this->name = name; }
+    string getName() const { return name; }
+    Datatype getType() const { return type; }
+    unsigned getSize() const { return size; }
 };
 
 #endif

@@ -32,20 +32,20 @@ namespace fs = std::filesystem;
  */
 bool processAdd(string tableName, istream *const line)
 {
-  string columnName, datatype;
+    string columnName, datatype;
 
-  // grab arguments
-  // assuming the statement is correctly formatted
-  *line >> columnName >> datatype;
-  if (datatype.back() == ';')
-    datatype.pop_back();
+    // grab arguments
+    // assuming the statement is correctly formatted
+    *line >> columnName >> datatype;
+    if (datatype.back() == ';')
+        datatype.pop_back();
 
-  // add arguments to table
-  Table table(tableName);
-  table.alter_add(columnName, datatype);
-  table.printFile();
-  cout << "Table " << tableName << " modified." << endl;
-  return true;
+    // add arguments to table
+    Table table(tableName);
+    table.alter_add(columnName, datatype);
+    table.printFile();
+    cout << "Table " << tableName << " modified." << endl;
+    return true;
 }
 
 /**
@@ -56,58 +56,58 @@ bool processAdd(string tableName, istream *const line)
  */
 bool processAlter(istream *const line)
 {
-  string word;
+    string word;
 
-  // grab the qualifier
-  *line >> word;
-
-  switch (resolveWord(word))
-  {
-  case TABLE:
-  {
-    // get the name of the table
-    string tableName;
-    *line >> tableName;
-
-    // title case table name
-    tableName = title_case(tableName);
-
-    // if the table doesn't exist, do nothing
-    if (!table_exists(tableName, "alter"))
-      return false;
-
-    // grab the verb and handle it accordingly
+    // grab the qualifier
     *line >> word;
+
     switch (resolveWord(word))
     {
-    case ADD:
+    case TABLE:
     {
-      processAdd(tableName, line);
-      break;
-    }
+        // get the name of the table
+        string tableName;
+        *line >> tableName;
 
-      // add more cases as program evolves
+        // title case table name
+        tableName = title_case(tableName);
+
+        // if the table doesn't exist, do nothing
+        if (!table_exists(tableName, "alter"))
+            return false;
+
+        // grab the verb and handle it accordingly
+        *line >> word;
+        switch (resolveWord(word))
+        {
+        case ADD:
+        {
+            processAdd(tableName, line);
+            break;
+        }
+
+            // add more cases as program evolves
+
+        default:
+        {
+            cout << "!Unexpected term: " << word << endl;
+            return false;
+            break;
+        }
+        }
+
+        break;
+    }
 
     default:
     {
-      cout << "!Unexpected term: " << word << endl;
-      return false;
-      break;
+        cout << "!Unexpected term: " << word << endl;
+        return false;
+        break;
     }
     }
 
-    break;
-  }
-
-  default:
-  {
-    cout << "!Unexpected term: " << word << endl;
-    return false;
-    break;
-  }
-  }
-
-  return true;
+    return true;
 }
 
 #endif

@@ -30,24 +30,24 @@ string currentDB = "";
  */
 bool processUse(istream *const line)
 {
-  string word;
-  *line >> word;
+    string word;
+    *line >> word;
 
-  if (word.back() == ';')
-    word.pop_back();
+    if (word.back() == ';')
+        word.pop_back();
 
-  if (fs::exists(word))
-  {
-    currentDB = word;
-    cout << "Using database " << word << "." << endl;
-  }
-  else
-  {
-    cout << "!" << word << " is not an existing database." << endl;
-    return false;
-  }
+    if (fs::exists(word))
+    {
+        currentDB = word;
+        cout << "Using database " << word << "." << endl;
+    }
+    else
+    {
+        cout << "!" << word << " is not an existing database." << endl;
+        return false;
+    }
 
-  return true;
+    return true;
 }
 
 #endif

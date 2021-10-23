@@ -32,91 +32,91 @@
  */
 bool parseStream(istream *const stream)
 {
-  // istream pointer supports cin and fstream
+    // istream pointer supports cin and fstream
 
-  // process the entire line for commands
-  while (stream->good())
-  {
+    // process the entire line for commands
+    while (stream->good())
+    {
 
-    // grab the first word in the line
-    // (should be a keyword)
-    string word;
-    *stream >> word;
+        // grab the first word in the line
+        // (should be a keyword)
+        string word;
+        *stream >> word;
 
-    //cout << word << endl;
+        //cout << word << endl;
 
-    // process the rest of the line based
-    // on the command
+        // process the rest of the line based
+        // on the command
 
-    // not all keywords are commands
-    switch (resolveWord(word))
-    {
-    case ALTER:
-    {
-      processAlter(stream);
-      break;
+        // not all keywords are commands
+        switch (resolveWord(word))
+        {
+        case ALTER:
+        {
+            processAlter(stream);
+            break;
+        }
+        case COMMENT:
+        {
+            processComment(stream);
+            break;
+        }
+        case CREATE:
+        {
+            processCreate(stream);
+            break;
+        }
+        case DELETE:
+        {
+            processDelete(stream);
+            break;
+        }
+        case DROP:
+        {
+            processDrop(stream);
+            break;
+        }
+        case EXIT:
+        {
+            processExit();
+            return false;
+            break;
+        }
+        case INSERT:
+        {
+            processInsert(stream);
+            break;
+        }
+        case SELECT:
+        {
+            processSelect(stream);
+            break;
+        }
+        case UPDATE:
+        {
+            processUpdate(stream);
+            break;
+        }
+        case USE:
+        {
+            processUse(stream);
+            break;
+        }
+        case INVALID_KEYWORD:
+        {
+            cout << "!Unrecognized command \"" << word << "\"." << endl;
+            return false;
+            break;
+        }
+        default:
+        {
+            cout << "!Unexpected keyword \"" << word << "\"." << endl;
+            return false;
+            break;
+        }
+        }
     }
-    case COMMENT:
-    {
-      processComment(stream);
-      break;
-    }
-    case CREATE:
-    {
-      processCreate(stream);
-      break;
-    }
-    case DELETE:
-    {
-      processDelete(stream);
-      break;
-    }
-    case DROP:
-    {
-      processDrop(stream);
-      break;
-    }
-    case EXIT:
-    {
-      processExit();
-      return false;
-      break;
-    }
-    case INSERT:
-    {
-      processInsert(stream);
-      break;
-    }
-    case SELECT:
-    {
-      processSelect(stream);
-      break;
-    }
-    case UPDATE:
-    {
-      processUpdate(stream);
-      break;
-    }
-    case USE:
-    {
-      processUse(stream);
-      break;
-    }
-    case INVALID_KEYWORD:
-    {
-      cout << "!Unrecognized command \"" << word << "\"." << endl;
-      return false;
-      break;
-    }
-    default:
-    {
-      cout << "!Unexpected keyword \"" << word << "\"." << endl;
-      return false;
-      break;
-    }
-    }
-  }
-  return true;
+    return true;
 }
 
 #endif

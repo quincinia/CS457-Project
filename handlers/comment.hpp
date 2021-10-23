@@ -23,8 +23,8 @@ using namespace std;
  */
 bool processComment(istream *const stream)
 {
-  stream->ignore(numeric_limits<streamsize>::max(), '\n');
-  return true;
+    stream->ignore(numeric_limits<streamsize>::max(), '\n');
+    return true;
 }
 
 #endif

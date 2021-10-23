@@ -30,26 +30,25 @@ void table_test();
 
 int main(int argc, char *argv[])
 {
-  string test;
-  cout << boolalpha;
+    string test;
+    cout << boolalpha;
 
-  // run commands from file (if possible)
-  if (argc >= 2)
-  {
-    istream *file = new ifstream(argv[1]);
-    parseStream(file);
-    delete file;
-  }
+    // run commands from file (if possible)
+    if (argc >= 2)
+    {
+        istream *file = new ifstream(argv[1]);
+        parseStream(file);
+        delete file;
+    }
 
-  cout << "!Notice: when using SET and WHERE, please format your input as follows:" << endl;
-  cout << "<item> <operator> <value>" << endl;
-  cout << "Note that this program IS whitespace-sensitive." << endl;
-  cout << "Correct usage:   price = 14.99" << endl;
-  cout << "Incorrect usage: price=14.99" << endl;
+    cout << "!Notice: when using SET and WHERE, please format your input as follows:" << endl;
+    cout << "<item> <operator> <value>" << endl;
+    cout << "Note that this program IS whitespace-sensitive." << endl;
+    cout << "Correct usage:   price = 14.99" << endl;
+    cout << "Incorrect usage: price=14.99" << endl;
 
-  // run commands from command line
-  while (parseStream(&cin));
-  // getline(cin, test);
+    // run commands from command line
+    while (parseStream(&cin))
+        ;
+    // getline(cin, test);
 }
-
-// get rid of this

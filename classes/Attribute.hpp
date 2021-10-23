@@ -28,34 +28,34 @@ using namespace std;
 Attribute::Attribute(string name, string datatype)
     : name(name), type(resolveType(datatype))
 {
-  unsigned u = 0;
-  switch (this->type)
-  {
-  case CHAR:
-  {
-    sscanf(datatype.c_str(), "%*4c(%u)", &u);
-    break;
-  }
+    unsigned u = 0;
+    switch (this->type)
+    {
+    case CHAR:
+    {
+        sscanf(datatype.c_str(), "%*4c(%u)", &u);
+        break;
+    }
 
-  case VARCHAR:
-  {
-    sscanf(datatype.c_str(), "%*7c(%u)", &u);
-    break;
-  }
+    case VARCHAR:
+    {
+        sscanf(datatype.c_str(), "%*7c(%u)", &u);
+        break;
+    }
 
-  case INVALID_TYPE:
-  {
-    // throw exception
-    cout << "!Datatype is invalid, operations may fail." << endl;
-  }
+    case INVALID_TYPE:
+    {
+        // throw exception
+        cout << "!Datatype is invalid, operations may fail." << endl;
+    }
 
-  default:
-  {
-    // getting rid of warnings
-    // if type is invalid, throw an exception
-  }
-  }
-  this->size = u;
+    default:
+    {
+        // getting rid of warnings
+        // if type is invalid, throw an exception
+    }
+    }
+    this->size = u;
 }
 
 /**
@@ -63,41 +63,41 @@ Attribute::Attribute(string name, string datatype)
  */
 string Attribute::toString()
 {
-  // could've just used a normal string but w.e
-  stringstream output;
-  output << (name + " ");
-  switch (this->type)
-  {
-  case CHAR:
-  {
-    output << "char(" << this->size << ")";
-    break;
-  }
+    // could've just used a normal string but w.e
+    stringstream output;
+    output << (name + " ");
+    switch (this->type)
+    {
+    case CHAR:
+    {
+        output << "char(" << this->size << ")";
+        break;
+    }
 
-  case FLOAT:
-  {
-    output << "float";
-    break;
-  }
+    case FLOAT:
+    {
+        output << "float";
+        break;
+    }
 
-  case INT:
-  {
-    output << "int";
-    break;
-  }
+    case INT:
+    {
+        output << "int";
+        break;
+    }
 
-  case VARCHAR:
-  {
-    output << "varchar(" << this->size << ")";
-    break;
-  }
+    case VARCHAR:
+    {
+        output << "varchar(" << this->size << ")";
+        break;
+    }
 
-  default:
-  {
-    // getting rid of warnings
-  }
-  }
-  return output.str();
+    default:
+    {
+        // getting rid of warnings
+    }
+    }
+    return output.str();
 }
 
 #endif

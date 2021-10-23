@@ -26,8 +26,8 @@ using namespace std;
  */
 bool processExit()
 {
-  cout << "All done." << endl;
-  return true;
+    cout << "All done." << endl;
+    return true;
 }
 
 #endif

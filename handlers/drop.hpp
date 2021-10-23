@@ -29,73 +29,73 @@ namespace fs = std::filesystem;
  */
 bool processDrop(istream *const line)
 {
-  string word;
+    string word;
 
-  // grab the qualifier
-  *line >> word;
-
-  switch (resolveWord(word))
-  {
-
-    // these could be brought out into their own functions
-
-  case DATABASE:
-  {
-    *line >> word;
-    if (word.back() == ';')
-      word.pop_back();
-    if (fs::remove_all(word))
-    {
-      cout << "Database " << word << " deleted." << endl;
-    }
-    else
-    {
-      cout << "!Failed to delete " << word << " because it does not exist." << endl;
-    }
-    break;
-  }
-
-  case TABLE:
-  {
-    // grab table name
+    // grab the qualifier
     *line >> word;
 
-    // title case table name
-    word = title_case(word);
-
-    if (word.back() == ';')
-      word.pop_back();
-
-    // similar to CREATE, we don't need to check
-    // if the table exists or not
-    if (!currentDB.empty())
+    switch (resolveWord(word))
     {
-      if (fs::remove(currentDB + "/" + word))
-      {
-        cout << "Table " << word << " deleted." << endl;
-      }
-      else
-      {
-        cout << "!Failed to delete " << word << " because it does not exist." << endl;
-      }
-    }
-    else
+
+        // these could be brought out into their own functions
+
+    case DATABASE:
     {
-      cout << "!Cannot delete table; no database in use." << endl;
+        *line >> word;
+        if (word.back() == ';')
+            word.pop_back();
+        if (fs::remove_all(word))
+        {
+            cout << "Database " << word << " deleted." << endl;
+        }
+        else
+        {
+            cout << "!Failed to delete " << word << " because it does not exist." << endl;
+        }
+        break;
     }
 
-    break;
-  }
+    case TABLE:
+    {
+        // grab table name
+        *line >> word;
 
-  default:
-  {
-    cout << "!Unexpected term: " << word << endl;
+        // title case table name
+        word = title_case(word);
+
+        if (word.back() == ';')
+            word.pop_back();
+
+        // similar to CREATE, we don't need to check
+        // if the table exists or not
+        if (!currentDB.empty())
+        {
+            if (fs::remove(currentDB + "/" + word))
+            {
+                cout << "Table " << word << " deleted." << endl;
+            }
+            else
+            {
+                cout << "!Failed to delete " << word << " because it does not exist." << endl;
+            }
+        }
+        else
+        {
+            cout << "!Cannot delete table; no database in use." << endl;
+        }
+
+        break;
+    }
+
+    default:
+    {
+        cout << "!Unexpected term: " << word << endl;
+        return false;
+        break;
+    }
+    }
+
     return false;
-    break;
-  }
-  }
-
-  return false;
 }
 
 #endif

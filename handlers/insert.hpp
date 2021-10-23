@@ -25,14 +25,17 @@ namespace fs = std::filesystem;
 // eg. 'mobile phone' will not be read correctly
 vector<string> read_values(istream *const line)
 {
-    string value;
+    char value[20];
+    char next = ';';
+    string insert;
     vector<string> values;
 
-    *line >> value;
+    scanf(" %[^( \n]%c", value, &next);
+    insert = value;
+
     // will not accept arguments if there is a space between the 'S' and the '('
-    if (capitalize(value.substr(0, 7)) == "VALUES(")
+    if (capitalize(insert) == "VALUES" && next == '(')
     {
-        value.erase(0, 7);
     }
     else
     {
@@ -41,36 +44,15 @@ vector<string> read_values(istream *const line)
         return values;
     }
 
-    while (line->good())
+    do
     {
-        // comma means there are more arguments left
-        if (value.back() == ',')
-        {
-
-            // remove the comma
-            value.pop_back();
-            values.push_back(value);
-            continue;
-        }
-
-        // semicolon means the list is finished
-        if (value.back() == ';')
-        {
-
-            // remove the semicolon
-            value.pop_back();
-
-            // remove the closing parentheses
-            value.pop_back();
-            values.push_back(value);
-            break;
-        }
-
-        // there should be no space between the last item and the ");"
-
-        // grab the next item
-        *line >> value;
-    }
+        scanf(" %[^,;]%c", value, &next);
+        // cout << "Value: " << value << ", ";
+        // cout << "Next: " << next << endl;
+        insert = value;
+        values.push_back(insert);
+    } while (next != ';');
+    values.back().pop_back();
 
     return values;
 }

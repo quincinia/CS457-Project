@@ -56,9 +56,11 @@ public:
 
     vector<vector<string> > rows;
 
+    const string alias;
+
     // read file and initialize attributes and rows
     // table correctness will be handled outside of the constructor
-    Table(string name);
+    Table(string name, string alias = "");
 
     // return the Attribute given its name
     Attribute query_attributes(string name);
@@ -100,8 +102,9 @@ public:
     // same as above, except only changes tuples that satisfy a condition
     void update(vector<pair<string, string> > &cols, Condition cond);
 
-    // performs a left outer join
-    Table join(Table other);
+    // if louter is true, then performs a left outer join
+    // otherwise, performs an inner join
+    Table join(Table other, Condition cond, bool louter = false);
 };
 
 #endif
