@@ -1,5 +1,5 @@
 //
-// CS 457 Programming Assignment 2
+// CS 457 Programming Assignment 3
 // Fall 2021
 // Jacob Gayban
 //
@@ -483,7 +483,7 @@ void Table::update(vector<pair<string, string> > &cols, Condition cond)
     int num_modified = 0;
     for (vector<string> &row : rows)
     {
-        // update only correct attribuets and tuples that satisfy the condition
+        // update only correct attributes and tuples that satisfy the condition
         if (cond_col != -1 && cond.resolve(row[cond_col]))
         {
             num_modified++;

@@ -1,5 +1,5 @@
 //
-// CS 457 Programming Assignment 2
+// CS 457 Programming Assignment 3
 // Fall 2021
 // Jacob Gayban
 //
@@ -21,12 +21,7 @@ namespace fs = std::filesystem;
 // clang++-7 -pthread -std=c++17 -o main main.cpp -lstdc++fs
 
 // To run a file, use:
-// ./main <filename>
-
-// Files can only be read ONCE, at the start of the program, after which
-// the program switches to command-line-only mode
-
-void table_test();
+// ./main < <filename>
 
 int main(int argc, char *argv[])
 {

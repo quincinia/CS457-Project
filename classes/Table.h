@@ -1,5 +1,5 @@
 //
-// CS 457 Programming Assignment 2
+// CS 457 Programming Assignment 3
 // Fall 2021
 // Jacob Gayban
 //
@@ -57,6 +57,9 @@ public:
     vector<vector<string> > rows;
 
     const string alias;
+
+    // used in Command
+    string get_name() const { return name; }
 
     // read file and initialize attributes and rows
     // table correctness will be handled outside of the constructor
