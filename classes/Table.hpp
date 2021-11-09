@@ -564,8 +564,12 @@ Table Table::join(Table other, Condition cond, bool louter)
         for (vector<string> &otherRow : other.rows)
         {
             vector<string> mergedRow;
+
+            // determine which table to query from, then determine which column the attribute is stored in
             string val1 = (attr1.first ? row : otherRow)[attr1.second];
             string val2 = (attr2.first ? row : otherRow)[attr2.second];
+
+            // if the tuple passes the condition, add it to the new table
             if (cond.resolve(val1, val2))
             {
                 mergedRow.reserve(row.size() + otherRow.size());
@@ -587,6 +591,7 @@ Table Table::join(Table other, Condition cond, bool louter)
         }
     }
 
+    // add tuples to the new table
     copy.rows = mergedRows;
 
     return copy;

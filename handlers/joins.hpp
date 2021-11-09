@@ -38,6 +38,7 @@ int read_FROM_clause(istream *const line, string &tbl1, string &alias1, string &
 
     // (1)
     // will accept an alias for a single table
+    // select from X x; (no condition)
     if (alias1.back() == ';')
     {
         tbl1.push_back(';');
@@ -53,7 +54,7 @@ int read_FROM_clause(istream *const line, string &tbl1, string &alias1, string &
     }
 
     // (3)
-    // inner join
+    // inner join with comma
     if (alias1.back() == ',')
     {
         alias1.pop_back();
@@ -89,6 +90,7 @@ int read_FROM_clause(istream *const line, string &tbl1, string &alias1, string &
     }
 
     // (5)
+    // left outer join
     string parser;
     *line >> parser;
     if (capitalize(tbl2) == "LEFT" && capitalize(alias2) == "OUTER" && capitalize(parser) == "JOIN")

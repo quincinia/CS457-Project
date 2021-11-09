@@ -162,6 +162,7 @@ bool processSelect(istream *const line)
     string tbl1, alias1;
     string tbl2, alias2;
 
+    // see joins.hpp for all the cases
     try
     {
         switch (read_FROM_clause(line, tbl1, alias1, tbl2, alias2))

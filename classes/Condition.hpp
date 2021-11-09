@@ -83,6 +83,9 @@ Condition read_aliased_condition(istream *const line, Table &table1, Table &tabl
     lhs.setName(attr1);
 
     // if both attributes are valid, we can now return the condition
+    // here we are not using Condition in the traditional sense; instead of storing an
+    // Attribute and a value, we are storing two Attributes, just that one of them is 
+    // left in string form
     return Condition(lhs, op, attr2);
 }
 
@@ -137,6 +140,8 @@ bool Condition::resolve(string value)
 
 bool Condition::resolve(string val1, string val2)
 {
+    // for manual comparisons
+    // good for when the comparison value always changes (like when doing joins)
     comp = val2;
     return resolve(val1);
 }
