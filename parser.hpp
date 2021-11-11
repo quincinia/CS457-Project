@@ -9,9 +9,13 @@
 #include <iostream>
 #include <sstream>
 #include <filesystem>
+#include <exception>
 #include "globals.hpp"
+#include "handlers/abort.hpp"
 #include "handlers/alter.hpp"
+#include "handlers/begin.hpp"
 #include "handlers/comment.hpp"
+#include "handlers/commit.hpp"
 #include "handlers/create.hpp"
 #include "handlers/delete.hpp"
 #include "handlers/drop.hpp"
@@ -51,14 +55,29 @@ bool parseStream(istream *const stream)
         // not all keywords are commands
         switch (resolveWord(word))
         {
+        case ABORT:
+        {
+            processAbort(stream);
+            break;
+        }
         case ALTER:
         {
             processAlter(stream);
             break;
         }
+        case BEGIN:
+        {
+            startTransaction(stream);
+            break;
+        }
         case COMMENT:
         {
             processComment(stream);
+            break;
+        }
+        case COMMIT:
+        {
+            processCommit(stream);
             break;
         }
         case CREATE:

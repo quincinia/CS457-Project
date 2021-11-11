@@ -56,14 +56,15 @@ public:
 
     vector<vector<string> > rows;
 
-    const string alias;
+    // alias isn't const anymore because that messes with the assignment in std::map
+    string alias;
 
     // used in Command
     string get_name() const { return name; }
 
     // read file and initialize attributes and rows
     // table correctness will be handled outside of the constructor
-    Table(string name, string alias = "");
+    Table(string name = "", string alias = "");
 
     // return the Attribute given its name
     Attribute query_attributes(string name);

@@ -212,6 +212,11 @@ vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, 
 Table::Table(string name, string alias)
     : name(name), alias(alias)
 {
+    if (name == "") {
+        // cout << "Constructing empty table." << endl;
+        return;
+    }
+
     // read file and initialize attributes and rows
     // table correctness will be handled outside of the constructor
     ifstream table(currentDB + "/" + name);
@@ -233,6 +238,8 @@ Table::Table(string name, string alias)
         getline(table, line);
         rows.push_back(read_delimited_list(line));
     }
+
+    table.close();
 }
 
 // return the Attribute given its name

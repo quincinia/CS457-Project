@@ -10,11 +10,19 @@
 #define GLOBALS
 
 #include <filesystem>
+#include "classes/Transaction.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
 
-extern string currentDB;
+Transaction transaction;
+string currentDB = "";
+
+// assumes table and DB already exists
+bool is_locked(string table)
+{
+    return fs::exists(currentDB + "/" + table + "_lock");
+}
 
 string capitalize(string s)
 {
@@ -35,9 +43,12 @@ string title_case(string s)
 enum Keyword
 {
     INVALID_KEYWORD,
+    ABORT,
     ALTER,
     ADD,
+    BEGIN,
     COMMENT,
+    COMMIT,
     CREATE,
     DATABASE,
     DELETE,
@@ -60,12 +71,18 @@ Keyword resolveWord(string word)
 {
     // only supporting caps right now
     word = capitalize(word);
+    if (word == "ABORT")
+        return ABORT;
     if (word == "ALTER")
         return ALTER;
     if (word == "ADD")
         return ADD;
+    if (word == "BEGIN")
+        return BEGIN;
     if (word.substr(0, 2) == "--")
         return COMMENT;
+    if (word == "COMMIT;") // commit is a one-liner, so we're expecting a semicolon
+        return COMMIT;
     if (word == "CREATE")
         return CREATE;
     if (word == "DATABASE")

@@ -26,6 +26,8 @@ using namespace std;
  */
 bool processExit()
 {
+    // transactions must be explicitly committed
+    transaction.abort();
     cout << "All done." << endl;
     return true;
 }

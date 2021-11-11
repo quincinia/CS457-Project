@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 #ifndef USE_HPP
 #define USE_HPP
 
-string currentDB = "";
+extern string currentDB;
 
 // USE db_name;
 
