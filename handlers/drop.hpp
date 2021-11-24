@@ -68,21 +68,36 @@ bool processDrop(istream *const line)
 
         // similar to CREATE, we don't need to check
         // if the table exists or not
-        if (!currentDB.empty())
+        // if (!currentDB.empty())
+        // {
+        //     if (fs::remove(currentDB + "/" + word))
+        //     {
+        //         cout << "Table " << word << " deleted." << endl;
+        //     }
+        //     else
+        //     {
+        //         cout << "!Failed to delete " << word << " because it does not exist." << endl;
+        //     }
+        // }
+        // else
+        // {
+        //     cout << "!Cannot delete table; no database in use." << endl;
+        // }
+
+        if (!table_exists(word, "delete"))
+            return false;
+
+        // if the locked table is not ours, then ignore the command
+        if (is_locked(word) && !transaction.owns(word))
         {
-            if (fs::remove(currentDB + "/" + word))
-            {
-                cout << "Table " << word << " deleted." << endl;
-            }
-            else
-            {
-                cout << "!Failed to delete " << word << " because it does not exist." << endl;
-            }
+            cout << "Error: Table " << word << " is locked!" << endl;
+            transaction.fail();
+            line->ignore(numeric_limits<streamsize>::max(), ';');
+            return false;
         }
-        else
-        {
-            cout << "!Cannot delete table; no database in use." << endl;
-        }
+
+        fs::remove(currentDB + "/" + word);
+        cout << "Table " << word << " deleted." << endl;
 
         break;
     }
