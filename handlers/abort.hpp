@@ -17,7 +17,10 @@ extern Transaction transaction;
 
 void processAbort(istream *const line)
 {
-    transaction.abort();
+    if (transaction.is_active())
+        transaction.abort();
+    else
+        cout << "!Cannot abort; no transaction in progress" << endl;
 }
 
 #endif
