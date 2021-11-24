@@ -51,8 +51,26 @@ bool processDelete(istream *const line)
         if (!table_exists(word, "delete from"))
             return false;
 
+        // if the locked table is not ours, then ignore the command
+        if (is_locked(word) && !transaction.owns(word))
+        {
+            cout << "Error: Table " << word << " is locked!" << endl;
+            transaction.fail();
+            line->ignore(numeric_limits<streamsize>::max(), ';');
+            return false;
+        }
+
         // table exists, remove elements
         Table table(word);
+
+        // if a transaction exists, use the saved value
+        if (transaction.is_active())
+        {
+            if (transaction.tables.count(word))
+                table = transaction.tables[word];
+            transaction.lock(word);
+        }
+
         if (deleteAll)
         {
             table.delete_all();
@@ -64,8 +82,16 @@ bool processDelete(istream *const line)
             table.delete_where(read_condition(line, table));
         }
 
-        // save new data into file
-        table.printFile();
+        // if a transaction is in progress, then don't save
+        if (transaction.is_active())
+        {
+            // save the updated table back into the transaction
+            transaction.tables[word] = table;
+        }
+        else
+        {
+            table.printFile();
+        }
 
         break;
     }

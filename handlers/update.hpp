@@ -76,8 +76,8 @@ bool processUpdate(istream *const line)
     if (!table_exists(word, "update"))
         return false;
 
-    // if table is locked, then ignore the command
-    if (is_locked(word))
+    // if the locked table is not ours, then ignore the command
+    if (is_locked(word) && !transaction.owns(word))
     {
         cout << "Error: Table " << word << " is locked!" << endl;
         transaction.fail();
@@ -114,13 +114,15 @@ bool processUpdate(istream *const line)
     }
 
     // if a transaction is in progress, then don't save
-    if (transaction.is_active()) {
+    if (transaction.is_active())
+    {
         // save the updated table back into the transaction
         transaction.tables[word] = table;
-    } else {
+    }
+    else
+    {
         table.printFile();
     }
-
 
     return true;
 }

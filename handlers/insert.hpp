@@ -78,11 +78,41 @@ bool processInsert(istream *const line)
         if (!table_exists(word, "insert into"))
             return false;
 
+        // if the locked table is not ours, then ignore the command
+        if (is_locked(word) && !transaction.owns(word))
+        {
+            cout << "Error: Table " << word << " is locked!" << endl;
+            transaction.fail();
+            line->ignore(numeric_limits<streamsize>::max(), ';');
+            return false;
+        }
+
         // table exists, insert
         vector<string> values = read_values(line);
+
         Table table(word);
+
+        // if a transaction exists, use the saved value
+        if (transaction.is_active())
+        {
+            if (transaction.tables.count(word))
+                table = transaction.tables[word];
+            transaction.lock(word);
+        }
+
         table.insert(values);
-        table.printFile();
+
+        // if a transaction is in progress, then don't save
+        if (transaction.is_active())
+        {
+            // save the updated table back into the transaction
+            transaction.tables[word] = table;
+        }
+        else
+        {
+            table.printFile();
+        }
+
         break;
     }
 

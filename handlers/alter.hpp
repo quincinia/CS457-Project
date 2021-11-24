@@ -42,8 +42,28 @@ bool processAdd(string tableName, istream *const line)
 
     // add arguments to table
     Table table(tableName);
+
+    // if a transaction exists, use the saved value
+    if (transaction.is_active())
+    {
+        if (transaction.tables.count(tableName))
+            table = transaction.tables[tableName];
+        transaction.lock(tableName);
+    }
+
     table.alter_add(columnName, datatype);
-    table.printFile();
+
+    // if a transaction is in progress, then don't save
+    if (transaction.is_active())
+    {
+        // save the updated table back into the transaction
+        transaction.tables[tableName] = table;
+    }
+    else
+    {
+        table.printFile();
+    }
+
     cout << "Table " << tableName << " modified." << endl;
     return true;
 }
@@ -75,6 +95,15 @@ bool processAlter(istream *const line)
         // if the table doesn't exist, do nothing
         if (!table_exists(tableName, "alter"))
             return false;
+
+        // if the locked table is not ours, then ignore the command
+        if (is_locked(word) && !transaction.owns(word))
+        {
+            cout << "Error: Table " << word << " is locked!" << endl;
+            transaction.fail();
+            line->ignore(numeric_limits<streamsize>::max(), ';');
+            return false;
+        }
 
         // grab the verb and handle it accordingly
         *line >> word;
