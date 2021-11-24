@@ -19,25 +19,9 @@ namespace fs = std::filesystem;
 // don't know if this is needed?
 extern string currentDB;
 
-// obsolete bc not working
-Table &Transaction::get_table(string name)
+bool owns(string name)
 {
-    if (tables.count(name)) {
-        return tables[name];
-    } else {
-        return tables[name] = Table(name);
-    }
-    // try
-    // {
-    //     cout << "This shouldn't be executed" << endl;
-    //     return tables.at(name);
-    // }
-    // catch (const exception)
-    // {
-    //     cout << "Constructing new table..." << endl;
-    //     tables.insert(pair<string, Table>(name, Table(name)));
-    //     return tables[name];
-    // }
+    return tables.count(name);
 }
 
 void Transaction::commit()

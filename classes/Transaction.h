@@ -19,15 +19,14 @@ class Transaction
 private:
     bool active = false;
 
-    // if we encounter any locked file during the transaction, then the 
+    // if we encounter any locked file during the transaction, then the
     // entire thing will fail even if other operations were successful
     bool failed = false;
 
-    
-
 public:
     // table names must be validated before calling this
-    Table &get_table(string name);
+    // true if the transaction owns the lock on this table
+    bool owns(string name);
 
     // for accessing and adding
     map<string, Table> tables;
