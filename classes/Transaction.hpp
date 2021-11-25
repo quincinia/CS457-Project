@@ -19,7 +19,7 @@ namespace fs = std::filesystem;
 // don't know if this is needed?
 extern string currentDB;
 
-bool owns(string name)
+bool Transaction::owns(string name)
 {
     return tables.count(name);
 }
@@ -81,6 +81,7 @@ void Transaction::unlock(string table)
 
         // if no exception is thrown, then we own this table and can unlock it
         fs::remove(currentDB + "/" + table + "_lock");
+        cout << "Removed file: " << table + "_lock" << endl;
 
         // unlocking will not save the table to disk, so be careful
     }

@@ -78,7 +78,8 @@ bool processDelete(istream *const line)
         else
         {
             // grab the WHERE (not checking it rn)
-            *line >> word;
+            string where;
+            *line >> where;
             table.delete_where(read_condition(line, table));
         }
 

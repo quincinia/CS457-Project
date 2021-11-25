@@ -64,36 +64,36 @@ vector<pair<string, string> > read_assignments(istream *const line, bool &update
 bool processUpdate(istream *const line)
 {
     bool updateCond = true;
-    string word;
+    string word, tableName;
 
     // grab table name
-    *line >> word;
+    *line >> tableName;
 
     // title case table name
-    word = title_case(word);
+    tableName = title_case(tableName);
 
     // if the table doesn't exist, do nothing
-    if (!table_exists(word, "update"))
+    if (!table_exists(tableName, "update"))
         return false;
 
     // if the locked table is not ours, then ignore the command
-    if (is_locked(word) && !transaction.owns(word))
+    if (is_locked(tableName) && !transaction.owns(tableName))
     {
-        cout << "Error: Table " << word << " is locked!" << endl;
+        cout << "Error: Table " << tableName << " is locked!" << endl;
         transaction.fail();
         line->ignore(numeric_limits<streamsize>::max(), ';');
         return false;
     }
 
     // table exists, update it
-    Table table(word);
+    Table table(tableName);
 
     // if a transaction exists, use the saved value
     if (transaction.is_active())
     {
-        if (transaction.tables.count(word))
-            table = transaction.tables[word];
-        transaction.lock(word);
+        if (transaction.tables.count(tableName))
+            table = transaction.tables[tableName];
+        transaction.lock(tableName);
     }
 
     // extract the SET (not checking this rn)
@@ -117,7 +117,7 @@ bool processUpdate(istream *const line)
     if (transaction.is_active())
     {
         // save the updated table back into the transaction
-        transaction.tables[word] = table;
+        transaction.tables[tableName] = table;
     }
     else
     {

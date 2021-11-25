@@ -97,9 +97,9 @@ bool processAlter(istream *const line)
             return false;
 
         // if the locked table is not ours, then ignore the command
-        if (is_locked(word) && !transaction.owns(word))
+        if (is_locked(tableName) && !transaction.owns(tableName))
         {
-            cout << "Error: Table " << word << " is locked!" << endl;
+            cout << "Error: Table " << tableName << " is locked!" << endl;
             transaction.fail();
             line->ignore(numeric_limits<streamsize>::max(), ';');
             return false;
