@@ -50,6 +50,7 @@ void Transaction::commit()
 
 void Transaction::abort()
 {
+    // undo all locks
     tables.clear();
     active = false;
     failed = false;

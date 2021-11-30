@@ -1,5 +1,5 @@
 //
-// CS 457 Programming Assignment 3
+// CS 457 Programming Assignment 4
 // Fall 2021
 // Jacob Gayban
 //
@@ -212,7 +212,8 @@ vector<vector<string> > Table::filter_cols(vector<vector<string> > &unfiltered, 
 Table::Table(string name, string alias)
     : name(name), alias(alias)
 {
-    if (name == "") {
+    if (name == "")
+    {
         // cout << "Constructing empty table." << endl;
         return;
     }

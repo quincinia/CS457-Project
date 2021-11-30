@@ -1,5 +1,5 @@
 //
-// CS 457 Programming Assignment 3
+// CS 457 Programming Assignment 4
 // Fall 2021
 // Jacob Gayban
 //
@@ -84,7 +84,7 @@ Condition read_aliased_condition(istream *const line, Table &table1, Table &tabl
 
     // if both attributes are valid, we can now return the condition
     // here we are not using Condition in the traditional sense; instead of storing an
-    // Attribute and a value, we are storing two Attributes, just that one of them is 
+    // Attribute and a value, we are storing two Attributes, just that one of them is
     // left in string form
     return Condition(lhs, op, attr2);
 }

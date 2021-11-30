@@ -1,5 +1,5 @@
 //
-// CS 457 Programming Assignment 3
+// CS 457 Programming Assignment 4
 // Fall 2021
 // Jacob Gayban
 //
@@ -92,12 +92,15 @@ bool processDrop(istream *const line)
         {
             cout << "Error: Table " << word << " is locked!" << endl;
             transaction.fail();
-            line->ignore(numeric_limits<streamsize>::max(), ';');
+            // //line->ignore(numeric_limits<streamsize>::max(), ';');
             return false;
         }
-
-        fs::remove(currentDB + "/" + word);
-        cout << "Table " << word << " deleted." << endl;
+        else
+        {
+            // actually this will delete the table file itself, not the table within the transaction object
+            fs::remove(currentDB + "/" + word);
+            cout << "Table " << word << " deleted." << endl;
+        }
 
         break;
     }
