@@ -82,7 +82,7 @@ void Transaction::unlock(string table)
 
         // if no exception is thrown, then we own this table and can unlock it
         fs::remove(currentDB + "/" + table + "_lock");
-        cout << "Removed file: " << table + "_lock" << endl;
+        // cout << "Removed file: " << table + "_lock" << endl;
 
         // unlocking will not save the table to disk, so be careful
     }
